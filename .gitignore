@@ -1,6 +1,11 @@
-app/Cache
-app/Logs
-
-easybook.zip
-
-vendor
+/nbproject/
+/.idea/*
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+node_modules/
+bin/
+obj/
+.vs/
