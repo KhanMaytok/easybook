@@ -6,16 +6,16 @@
 {% set urlBasePath = 2 == item.level ? '..' : '.' %}
 <div class="menu">
     <div class="row">
-        <h1 class="span9"><a href="{{ urlBasePath }}/index.html">{{ book.title }}</a></h1>
+        <h1 class="span9"><a href="{{ urlBasePath }}/">{{ book.title }}</a></h1>
         <p class="span3">
             {% if previous %}
-            <a href="{{ urlBasePath }}/{{ previous.url }}"><span>&larr;</span> {{ app.getLabel('previous') }}</a>
+            <a href="{{ urlBasePath }}/{{ previous.url|replace({'.html': '/'}) }}"><span>&larr;</span> {{ app.getLabel('previous') }}</a>
             {% else %}
             <a class="disabled" href="#"><span>&larr;</span> {{ app.getLabel('previous') }}</a>
             {% endif %}
 
             {% if next %}
-            <a href="{{ urlBasePath }}/{{ next.url }}">{{ app.getLabel('next') }} <span>&rarr;</span></a>
+            <a href="{{ urlBasePath }}/{{ next.url|replace({'.html': '/'}) }}">{{ app.getLabel('next') }} <span>&rarr;</span></a>
             {% else %}
             <a class="disabled" href="#">{{ app.getLabel('next') }} <span>&rarr;</span></a>
             {% endif %}
@@ -41,7 +41,7 @@
                 {% for tocItem in item.toc if tocItem.level <= edition.toc.deep %}
                     <li class="level-{{ tocItem.level }}">
                         <span>{{ tocItem.level != 1 ? tocItem.label : '' }}</span>
-                        <a href="#{{ tocItem.slug }}">{{ tocItem.title }}</a>
+                        <a href="#{{ tocItem.slug|replace({'.html': '/'}) }}">{{ tocItem.title }}</a>
                     </li>
                 {% endfor %}
             {% elseif 2 == edition.chunk_level %}
@@ -51,7 +51,7 @@
                    and tocItem.parent.slug|default(tocItem.slug) == item.parent.slug|default(item.slug) %}
                     <li class="level-{{ tocItem.level }}">
                         <span>{{ tocItem.label }}</span>
-                        <a href="{{ urlBasePath }}/{{ tocItem.url }}">{{ tocItem.title }}</a>
+                        <a href="{{ urlBasePath|replace({'.html': '/'}) }}/{{ tocItem.url|replace({'.html': '/'}) }}">{{ tocItem.title }}</a>
                     </li>
                 {% endfor %}
             {% endif %}

@@ -107,8 +107,6 @@ class LinkPlugin implements EventSubscriberInterface
                         $urlBasePath = '';
                     }
 
-                    $newUri = str_replace(".html", "/", $newUri);
-
                     return sprintf(
                         '<a class="internal" href="%s%s"%s</a>',
                         $urlBasePath, $newUri, $matches[2]
