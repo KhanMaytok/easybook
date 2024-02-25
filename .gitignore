@@ -1,0 +1,10 @@
+app/Cache
+app/Logs
+
+doc
+!doc/easybook-doc-en/*
+doc/easybook-doc-en/Output/*
+
+easybook.zip
+
+vendor
