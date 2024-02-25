@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Giancarlo Ventura" />
+    <meta name="date" content="11/01/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Hacking easybook | Valonde</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">Valonde</a></h1>
+        <p class="span3">
+                        <a href="./capitulo-9.html"><span>&larr;</span> Anterior</a>
+            
+                        <a href="./apendice-a.html">Siguiente <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="hacking-easybook"><span>Capítulo 10</span> Hacking easybook</h1>
+        <h2 id="custom-configuration-options">10.1 Custom configuration options</h2>
+
+<p><strong>easybook</strong> doesn't restrict the configuration options that you can set on 
+your book, editions and contents. <strong>easybook</strong> always puts you in control, so 
+you can define all the new settings that you may need.</p>
+
+<p>Do you want to show the price of the book on the cover? Add a new option called
+<code>price</code> under the <code>book</code> option of <code>config.yml</code> file:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    price: 10
+~~~</p>
+
+<p>Now you can use this option in any template with the following expression:
+<code>{{ book.price }}</code>.</p>
+
+<p>Do you want to use different CSS frameworks to generate the book website? Add 
+a new option called <code>framework</code> in some editions:</p>
+
+<p>~~~ .yaml
+editions:
+    my_website1:
+        format:    html_chunked
+        framework: bootstrap_3
+        # ...</p>
+
+<pre><code>my_website2:
+    extends:   my_website1
+    framework: foundation_4
+</code></pre>
+
+<p>~~~</p>
+
+<p>This new option is now available in any template through the following 
+expression: <code>{{ edition.framework }}</code>.</p>
+
+<p>You can also add new options to the contents of the book.  Do you want to 
+indicate the estimated reading time in each chapter? Add the following <code>time</code> 
+option for <code>chapter</code> elements:</p>
+
+<p>~~~ .yaml
+contents:
+    - { element: cover }
+    - ...
+    - { element: chapter, number: 1, ..., time: 20 }
+    - { element: chapter, number: 2, ..., time: 12 }
+    - ...
+~~~</p>
+
+<p>And now you can add <code>{{ item.config.time }}</code> in <code>chapter.twig</code> template to show
+the estimated reading time for each chapter.</p>
+
+<p>Book configuration options can also use Twig expressions for their values (even
+for dynamic options set by <code>--configuration</code> option explained in the next
+section):</p>
+
+<p>~~~ .yaml
+book:
+    title:            "{{ book.author }} diary"
+    author:           "..."
+    publication_date: "{{ '+2days'|date('m/d/Y') }}"
+    # ...
+~~~</p>
+
+<h2 id="dynamic-configuration-options">10.2 Dynamic configuration options</h2>
+
+<p>Sometimes, configuration option values can't be defined or are variables 
+themseleves. For that reason, <strong>easybook</strong> allows you to set or override configuration options dynamically with the <code>publish</code> command.</p>
+
+<p>Add the <code>--configuration</code> option to <code>publish</code> command and pass to it a JSON 
+formatted string with the configuration options:</p>
+
+<p>~~~ .cli
+$ ./book publish the-origin-of-species web
+         --configuration='{ "book": { "title": "My new title" } }'
+~~~</p>
+
+<p>Using dynamic options you can for example define a new <code>buyer</code> option that
+stores the name of the person that bought the book. Then you can prevent or
+minimize digital piracy displaying the buyer name inside the book (use
+<code>{{ book.buyer }}</code> Twig expression in any book template):</p>
+
+<p>~~~ .cli
+$ ./book publish the-origin-of-species print
+         --configuration='{ "book": { "buyer": "John Smith" } }'
+~~~</p>
+
+<p>Likewise, any edition option can be set dynamically:</p>
+
+<p>~~~ .cli
+$ ./book publish the-origin-of-species web --configuration='{ "book": { "editions": { "web": { "highlight_code": true } } } }'
+~~~</p>
+
+<p>When passing a lot of configuration options, you must be very careful with JSON
+braces and quotes. If you run the command automatically, it is easier to create
+a PHP array with all the options and then convert it to JSON with the
+<code>json_encode()</code> function.</p>
+
+<p>Dynamic options are so advanced that they even allow you to define on-the-fly
+editions:</p>
+
+<p>~~~ .cli
+$ ./book publish the-origin-of-species edition1 --configuration='{ "book": { "editions": { "edition1": { ... } } } }'
+~~~</p>
+
+<p>When publishing a book, <strong>easybook</strong> uses the following priority hierarchy to
+combine configuration options (the higher, the more priority):</p>
+
+<ol>
+<li>Dynamic options set with <code>--configuration</code> option.</li>
+<li>Options set in the <code>config.yml</code> file.</li>
+<li>Default options defined by <strong>easybook</strong>.</li>
+</ol>
+
+<p>Configuration options related to editions also take into account the possible
+edition inheritance. If an edition inherits from another one, its options
+always override the options of its <em>parent</em> edition.</p>
+
+<h2 id="global-parameters">10.3 Configuring global parameters</h2>
+
+<p>In addition to its own configuration options, a book can also modify global
+<strong>easybook</strong> parameters. To do so, add an <code>easybook</code> configuration section
+inside your <code>config.yml</code> file (it's recommended to create it at the top of the
+file to spot it easily):</p>
+
+<p>~~~ .yaml
+easybook:
+    parameters:
+        kindlegen.command_options: '-c0 -gif verbose'
+        kindlegen.path:            '/path/to/utils/KindleGen/kindlegen'</p>
+
+<p>book:
+    title: '...'
+    # ...
+~~~</p>
+
+<p>Define the <strong>easybook</strong> global options under the <code>parameters</code> key of <code>easybook</code>
+section. In the previous example, the book sets the <code>kindlegen.command_options</code>
+option to tweak the command used to generate Kindle-compatible MOBI files. In 
+addition, to avoid repeating it each time the book is generated, the book also 
+sets the path to the <code>kindlegen</code> library thanks to the <code>kindlegen.path</code>.</p>
+
+<p>You can replace any of the parameters defined or used in the <code>Application.php</code>
+class located at <code>src/Easybook/DependencyInjection/</code>. Therefore, use the
+following configuration to modify the directory where the book is generated:</p>
+
+<p>~~~ .yaml
+easybook:
+    parameters:
+        publishing.dir.output:  '/my/path/for/books/my-book'</p>
+
+<p>book:
+    title: '...'
+    # ...
+~~~</p>
+
+<p>The separator used by the slugger is another option that is usually modified.
+By default <strong>easybook</strong> uses the dash (<code>-</code>) for the slugs (this affects the
+book page names and the URL for the books published as websites). If you prefer
+the underscore (<code>_</code>) you can now easily configure it in your book:</p>
+
+<p>~~~ .yaml
+easybook:
+    parameters:
+        slugger.options:
+            separator:   '_'</p>
+
+<p>book:
+    title: '...'
+    # ...
+~~~</p>
+
+<h2 id="new-content-types">10.4 Defining new content types</h2>
+
+<p>It's uncommon and generally unneeded, but you can also define new content types
+besides the 21 types included in <strong>easybook</strong>. Imagine that you want to include
+a page with a humorous cartoon between some chapters. Let's call this new 
+content type <code>cartoon</code>.</p>
+
+<p>If pages of type <code>cartoon</code> include few contents (a picture and its caption for
+example), it's better to define these contents directly in the  <code>config.yml</code> 
+file:</p>
+
+<p>~~~ .yaml
+contents:
+    - { element: cover }
+    - ...
+    - { element: chapter, number: 1, ... }
+    - { element: cartoon, image: cartoon1.png, caption: '...' }
+    - { element: chapter, number: 2, ... }
+    - ...
+~~~</p>
+
+<p>Then, create a custom <code>cartoon.twig</code> template in the <code>Resources/Templates/</code> 
+directory of your book:</p>
+
+<p>~~~ .twig
+<div class="page:cartoon">
+    <img src="/img/doc-en/{{ item.config.image }}" />
+    <p>{{ item.config.caption }}</p>
+</div>
+~~~</p>
+
+<p>In contrast, if pages of type <code>cartoon</code> include a lot of contents, it's better
+to create a content file for each of these elements:</p>
+
+<p>~~~ .yaml
+contents:
+    - { element: cover }
+    - ...
+    - { element: chapter, number: 1, ... }
+    - { element: cartoon, content: cartoon1.md }
+    - { element: chapter, number: 2, ... }
+    - ...
+~~~</p>
+
+<p>Then, display this content with the following simplified <code>cartoon.twig</code> 
+template:</p>
+
+<p>~~~ .twig
+<div class="page:cartoon">
+    {{ item.content }}
+</div>
+~~~</p>
+
+<p>Finally, you can also combine these two methods creating a file with the 
+contents and adding several configuration options in <code>config.yml</code>. The 
+template can easily use both sources of information:</p>
+
+<p>~~~ .twig
+<div class="page:cartoon">
+    <img src="/img/doc-en/{{ item.config.image }}" /></p>
+
+<pre><code>{{ item.content }}
+</code></pre>
+
+<p></div>
+~~~</p>
+
+<p>That's it! You can now use the new <code>cartoon</code> content type in your book and you
+can create new content types following the same steps explained above.</p>
+
+<h2 id="easybook-internals">10.5 easybook internals</h2>
+
+<p><strong>easybook</strong> flexibility allows you to create advanced books without effort and
+without having to study the source code of the application. However, to master
+<strong>easybook</strong> you'll have to dive into the guts of the application.</p>
+
+<p>The most important class of <strong>easybook</strong> is
+<code>src/Easybook/DependencyInjection/Application.php</code>. This class follows the
+<em>dependency injection</em> pattern, uses the <a href="http://pimple.sensiolabs.org/">Pimple component</a> and contains 
+all the variables, functions and services of the application.</p>
+
+<p>The most interesting command of <strong>easybook</strong> is <code>publish</code>, which publishes an
+specific edition of the book. Internally it uses a <code>*Publisher</code> class which 
+depends on the type of edition that is published (<code>epub</code>, <code>mobi</code>, <code>pdf</code>, <code>html</code>
+or <code>html_chunked</code>). The details of each <em>publisher</em> vary, but the basic
+workflow is always the same:</p>
+
+<p>~~~ .php
+public function publishBook()
+{
+    $this->loadContents();
+    $this->parseContents();
+    $this->decorateContents();
+    $this->assembleBook();
+}
+~~~</p>
+
+<p>First, the contents of the book defined in the <code>contents</code> option of the
+<code>config.yml</code> file are loaded (<code>loadContents()</code>) . Then, each content is parsed (<code>parseContents()</code>) to convert it from its original format to the 
+format needed by this publisher.</p>
+
+<p>At the moment <strong>easybook</strong> only supports Markdown as the original format. If 
+you want to add support for other formats, you have to create a new parser (
+dig into the Markdown parser to know how to create it) and you also have to 
+change the <code>parseContents()</code> method of the publisher.</p>
+
+<p>After converting all contents to the desired format (usually HTML) they are
+decorated using Twig templates (<code>decorateContents()</code>). Finally, the
+<code>assembleBook()</code> method is responsible for creating the published book. This is
+the most unique method of the publishers, as sometimes it has to create a PDF
+file, sometimes just an HTML file and other times it must create an entire
+website with many HTML pages.</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Índice de contenidos</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-10.html#hacking-easybook">Hacking easybook</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>10.1</span>
+                        <a class="internal" href="./chapter-10.html#custom-configuration-options">Custom configuration options</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>10.2</span>
+                        <a class="internal" href="./chapter-10.html#dynamic-configuration-options">Dynamic configuration options</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>10.3</span>
+                        <a class="internal" href="./chapter-10.html#global-parameters">Configuring global parameters</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>10.4</span>
+                        <a class="internal" href="./chapter-10.html#new-content-types">Defining new content types</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>10.5</span>
+                        <a class="internal" href="./chapter-10.html#easybook-internals">easybook internals</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Javier Eguiluz" />
+    <meta name="date" content="01/11/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Other First Level Header | easybook documentation</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item appendix">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">easybook documentation</a></h1>
+        <p class="span3">
+                        <a href="./chapter-10.html"><span>&larr;</span> Previous</a>
+            
+                        <a href="./appendix-a.html">Next <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="special-id"><span>Appendix A.</span> Other First Level Header</h1>
+        <p><strong>easybook</strong> uses Markdown as the standard markup language to create books and
+contents. In the future, <strong>easybook</strong> will support other markup languages such
+as reStructuredText. Meanwhile, <strong>easybook</strong> enhances the original Markdown
+syntax to provide some of the most demanded features for book writers.</p>
+
+<h2 id="basic-syntax">Basic syntax</h2>
+
+<p><strong>easybook</strong> supports all of the original features described in the
+<a href="http://daringfireball.net/projects/markdown/syntax/">official Markdown syntax</a>.
+Please, refer to that reference to learn how to define headers, paragraphs,
+lists, code blocks, images, and so on.</p>
+
+<h2 id="extended-syntax">Extended syntax</h2>
+
+<p><strong>easybook</strong> includes a Markdown parser based on <a href="http://michelf.com/projects/php-markdown/extra/">PHP Markdown Extra Project</a>.
+This project brings some nice extra features to the basic Markdown syntax.</p>
+
+<h3 id="header-id-attributes">Header id attributes</h3>
+
+<p>You can add custom <code>id</code> attributes to any header (both <em>setext</em> and <em>atx</em> style
+headers):</p>
+
+<p>~~~
+(atx style headers)</p>
+
+<h1 id="header1">Appendix A. Header 1</h1>
+
+<p>...</p>
+
+<h2 id="my-custom-header2-id">Header 2</h2>
+
+<p>(setex style headers)</p>
+
+<h1 id="special-id">Appendix A. Other First Level Header</h1>
+
+<p>~~~</p>
+
+<p>Then, you can link internally to any book section:</p>
+
+<p>~~~
+In the <a class="internal" href="./appendix-a.html#header1">first section</a> you can see the differences between
+<a class="internal" href="./appendix-a.html#my-custom-header2-id">this section</a> and <a class="internal" href="./appendix-a.html#special-id">that section</a>.
+~~~</p>
+
+<p>As a bonus, in PDF books the internal links display the linked book page.</p>
+
+<h3 id="tables">Tables</h3>
+
+<p>You can add leading and trailing pipes to table rows:</p>
+
+<p>~~~
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+~~~</p>
+
+<div class="table" id="table-a-1">
+
+    <table>
+<thead>
+<tr>
+  <th>First Header</th>
+  <th>Second Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Content Cell</td>
+  <td>Content Cell</td>
+</tr>
+<tr>
+  <td>Content Cell</td>
+  <td>Content Cell</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+<p>The contents of the cells can be aligned adding a <code>:</code> character on the side
+where you want contents aligned. In the following example, the contents of the
+first column will be left-aligned and the contents of the second column will be
+right-aligned:</p>
+
+<p>~~~
+| Item      | Value |
+| :-------- | -----:|
+| Computer  | $1600 |
+| Phone     |   $12 |
+| Pipe      |    $1 |
+~~~</p>
+
+<p>Table contents can include any simple formatting as bold, italics, code, etc.</p>
+
+<h3 id="other-features">Other features</h3>
+
+<p>As explained in the <a href="http://michelf.com/projects/php-markdown/extra/">official PHP Markdown Extra syntax</a>
+you can also create definition lists, footnotes, automatic abbreviations, fenced
+code blocks, etc.</p>
+
+<h2 id="easybook-exclusive-syntax">easybook exclusive syntax</h2>
+
+<h3 id="code-blocks">Code blocks</h3>
+
+<p>Code blocks can be automatically highlighted using the following syntax:</p>
+
+<p>~~~
+[code language]
+...</p>
+
+<p>[code php]
+...</p>
+
+<p>[code xml]
+...
+~~~</p>
+
+<p><strong>easybook</strong> recognizes automatically tens of programming languages thanks to
+the use of <a href="http://qbnz.com/highlighter/">GeSHi highlighting library</a>.</p>
+
+<h3 id="image-alignment">Image alignment</h3>
+
+<p>(Added in easybook 4.8)</p>
+
+<p>Books usually align/float images on the right/left of the contents, but Markdown
+doesn't include a mechanism to define image alignment:</p>
+
+<p>~~~
+<div class="figure" id="figure-a-1">
+    <img src="/img/doc-en/url" alt="Alt text" title="Optional title text" />
+
+    <p class="caption"><strong>Figure A.1</strong> Alt text</p>
+</div>
+
+~~~</p>
+
+<p><strong>easybook</strong> defines a simple and Markdown-compatible mechanism based on adding
+whitespaces on <em>Alt text</em>:</p>
+
+<p>~~~
+// regular image not aligned
+<div class="figure" id="figure-a-2">
+    <img src="/img/doc-en/figure1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.2</strong> Test image</p>
+</div>
+
+
+<p>// "alt text" has a whitespace on the left
+// -> the image is left aligned
+<div class="figure left" id="figure-a-3">
+    <img src="/img/doc-en/figure1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.3</strong> Test image</p>
+</div>
+
+
+<p>// "alt text" has a whitespace on the right
+// -> the image is right aligned
+<div class="figure right" id="figure-a-4">
+    <img src="/img/doc-en/figure1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.4</strong> Test image</p>
+</div>
+
+
+<p>// "alt text" has whitespaces both on the left and on the right
+// -> the image is centered
+<div class="figure center" id="figure-a-5">
+    <img src="/img/doc-en/figure1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.5</strong> Test image</p>
+</div>
+
+~~~</p>
+
+<p>If you enclose alt text with quotes, make sure that whitespaces are placed
+outside the quotes. The following images for example don't define any alignment:</p>
+
+<p>~~~
+<div class="figure" id="figure-a-6">
+    <img src="/img/doc-en/figure1.png" alt="&quot;Test image&quot;" />
+
+    <p class="caption"><strong>Figure A.6</strong> &quot;Test image&quot;</p>
+</div>
+
+
+<div class="figure" id="figure-a-7">
+    <img src="/img/doc-en/figure1.png" alt="&quot; Test image&quot;" />
+
+    <p class="caption"><strong>Figure A.7</strong> &quot; Test image&quot;</p>
+</div>
+
+
+<div class="figure" id="figure-a-8">
+    <img src="/img/doc-en/figure1.png" alt="&quot;Test image &quot;" />
+
+    <p class="caption"><strong>Figure A.8</strong> &quot;Test image &quot;</p>
+</div>
+
+
+<div class="figure" id="figure-a-9">
+    <img src="/img/doc-en/figure1.png" alt="&quot; Test image &quot;" />
+
+    <p class="caption"><strong>Figure A.9</strong> &quot; Test image &quot;</p>
+</div>
+
+~~~</p>
+
+<p>Image alignment is also possible when using the alternative image syntax:</p>
+
+<p>~~~
+<div class="figure" id="figure-a-10">
+    <img src="/img/doc-en/image1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.10</strong> Test image</p>
+</div>
+
+
+<div class="figure left" id="figure-a-11">
+    <img src="/img/doc-en/image1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.11</strong> Test image</p>
+</div>
+
+
+<div class="figure right" id="figure-a-12">
+    <img src="/img/doc-en/image1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.12</strong> Test image</p>
+</div>
+
+
+<div class="figure center" id="figure-a-13">
+    <img src="/img/doc-en/image1.png" alt="Test image" />
+
+    <p class="caption"><strong>Figure A.13</strong> Test image</p>
+</div>
+
+
+<p>~~~</p>
+
+<h3 id="decorative-images">Decorative images</h3>
+
+<p>(Added in easybook 5.0)</p>
+
+<p><strong>easybook</strong> makes really easy defining images that will be treated as book 
+illustrations (<em>figures</em>) and automatically labeled and numbered. The <code>label</code> 
+configuration option defines whether all the images in the book are to be 
+treated as illustrations, but it has one drawback: it applies to all of the
+images, so when set to <code>true</code> you cannot include other purely decorative 
+images (for example, a graphical separator for paragraphs or sections).</p>
+
+<p>The following syntax makes possible defining this type of decorative images:</p>
+
+<p>~~~
+<span class="image">
+    <img src="/img/doc-en/image1.png"  />
+</span>
+
+~~~</p>
+
+<p>That is: just defining '*' as the image title tells <strong>easybook</strong> that the image 
+is not to be treated as an illustration but a normal image (i.e. it will not 
+have caption nor will be included in the table of figures, and it will be 
+embedded into the normal text flow instead of being assigned a block format).</p>
+
+<p>All other image options also work, so the following examples are still valid:</p>
+
+<p>~~~
+<span class="image left">
+    <img src="/img/doc-en/image1.png"  />
+</span>
+
+
+<span class="image center">
+    <img src="/img/doc-en/image1.png"  />
+</span>
+
+
+<span class="image center">
+    <img src="/img/doc-en/image1.png"  />
+</span>
+
+
+<p>~~~</p>
+
+<h3 id="page-breaks">Page breaks</h3>
+
+<p>(Added in easybook 5.0)</p>
+
+<p>Books can force page breaks inside any content by using one of the following
+two special tags:</p>
+
+<p>~~~
+<!-- BREAK -->
+<br class="page-break" />
+
+~~~</p>
+
+<p>The first tag uses the LeanPub syntax and the second one uses the Marked syntax.
+Note that you must write the tags as shown above, without adding any extra
+whitespace.</p>
+
+<p>You can mix the two tags in the same content and you can place them anywhere
+(inside a table, inside a list, inside a heading, etc.)</p>
+
+<h3 id="admonitions">Admonitions</h3>
+
+<p>(Added in easybook 5.0)</p>
+
+<p><strong>easybook</strong> supports several kinds of admonitions. The syntax is based on
+LeanPub and Marked and it's very similar to blockquotes:</p>
+
+<p>~~~</p>
+
+<blockquote>
+  <p>This is a regular bloquote
+  Nothing special here</p>
+</blockquote>
+
+<div class="admonition aside">
+  <p>This is a sidebar or aside
+  You can use <strong>any markup</strong> inside</p>
+</div>
+
+<p>A></p>
+
+<div class="admonition aside">
+  <blockquote>
+    <p>even
+    nested
+    blockquotes</p>
+  </blockquote>
+</div>
+
+<p>A></p>
+
+<div class="admonition aside">
+  <p>And lists:</p>
+</div>
+
+<p>A></p>
+
+<div class="admonition aside">
+  <ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+  </ul>
+</div>
+
+<div class="admonition note">
+  <p>This is a note
+  ...</p>
+</div>
+
+<div class="admonition tip">
+  <p>This is a tip
+  ...</p>
+</div>
+
+<div class="admonition error">
+  <p>This is an error message
+  ...</p>
+</div>
+
+<div class="admonition information">
+  <p>This is just an information
+  ...</p>
+</div>
+
+<div class="admonition question">
+  <p>This is a question
+  ...</p>
+</div>
+
+<div class="admonition discussion">
+  <p>This is a discussion
+  ...</p>
+</div>
+
+<p>~~~</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Table of contents</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./appendix-a.html#special-id">Other First Level Header</a>
+                    </li>
+                                    <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="#markdown-reference">Markdown reference</a>
+                    </li>
+                                    <li class="level-2">
+                        <span></span>
+                        <a class="internal" href="./appendix-a.html#basic-syntax">Basic syntax</a>
+                    </li>
+                                    <li class="level-2">
+                        <span></span>
+                        <a class="internal" href="./appendix-a.html#extended-syntax">Extended syntax</a>
+                    </li>
+                                    <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./appendix-a.html#header1">Header 1</a>
+                    </li>
+                                    <li class="level-2">
+                        <span></span>
+                        <a class="internal" href="./appendix-a.html#my-custom-header2-id">Header 2</a>
+                    </li>
+                                    <li class="level-2">
+                        <span></span>
+                        <a class="internal" href="./appendix-a.html#easybook-exclusive-syntax">easybook exclusive syntax</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Giancarlo Ventura" />
+    <meta name="date" content="22/02/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Plugins | Cortos NeoParis</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">Cortos NeoParis</a></h1>
+        <p class="span3">
+                        <a href="./capitulo-8.html"><span>&larr;</span> Anterior</a>
+            
+                        <a href="./capitulo-10.html">Siguiente <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="plugins"><span>Capítulo 9</span> Plugins</h1>
+        <p><strong>easybook</strong> is a rather flexible application with lots of configuration
+options. However, sometimes your requirements are so specific that cannot be
+covered by any configuration option.</p>
+
+<p>In those cases, you can use <strong>plugins</strong>, which allow you to completely modify 
+the behavior of <strong>easybook</strong>. During the publication of a book, <strong>easybook</strong>
+performs a lot of different tasks: loading the book contents, transforming them
+from Markdown to HTML, building the PDF, EPUB or MOBI file, etc.</p>
+
+<p>Whenever <strong>easybook</strong> begins or ends an important tasks, an <strong>event</strong> is 
+notified. Plugins can <em>hook</em> into any of these events to perform any action
+before or after these tasks.</p>
+
+<h2 id="creating-the-first-plugin">9.1 Creating the first plugin</h2>
+
+<p><strong>easybook</strong> uses the <a href="http://symfony.com/doc/current/components/event_dispatcher">Event Dispatcher component</a>
+of Symfony2 to define its plugins. Technically speaking, a plugin is any PHP class stored in the <code>Resources/Plugins/</code> directory of your book, whose name 
+ends with the word <code>Plugin</code> and that implements the <code>EventSubscriberInterface</code> 
+interface.</p>
+
+<p>Imagine that you want to measure the time elapsed to publish a book. Given that
+<strong>easybook</strong> notifies both the begin and the end of the book publication, it's
+really easy to create a plugin that <em>hooks</em> on both events to register the
+timestamp of each moment.</p>
+
+<p>If the plugin is called <code>Timer</code>, create a new <code>TimerPlugin</code> class in the
+<code>&lt;book&gt;/Resources/Plugins/TimerPlugin.php</code> file and add the following content:</p>
+
+<p>~~~ .php
+// <book>/Resources/Plugins/TimerPlugin.php
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;</p>
+
+<p>class TimerPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array();
+    }
+}
+~~~</p>
+
+<p>Now, use the <code>getSubscribedEvents()</code> method to define the specific events that
+you need to <em>hook</em> into. In the next section, you'll find the
+<a class="internal" href="./chapter-9.html#easybook-events">complete list of easybook events</a> but for now, just assume
+that the event notified when the book publication begins is called
+<code>Events::PRE_PUBLISH</code> and the other event is called <code>Events::POST_PUBLISH</code>:</p>
+
+<p>~~~ .php
+// <book>/Resources/Plugins/TimerPlugin.php
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Easybook\Events\EasybookEvents as Events;
+use Easybook\Events\BaseEvent;</p>
+
+<p>class TimerPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::PRE_PUBLISH  => 'registerPublicationStart',
+            Events::POST_PUBLISH => 'registerPublicationEnd',
+        );
+    }</p>
+
+<pre><code>public function registerPublicationStart(BaseEvent $event)
+{
+    // ...
+}
+
+public function registerPublicationEnd(BaseEvent $event)
+{
+    // ...
+}
+</code></pre>
+
+<p>}
+~~~</p>
+
+<p>First, the <code>getSubscribedEvents()</code> method returns an array of events that you 
+want to subscribe to and the name of the methods that will be executed when 
+those events occur. Therefore, this plugin must define two new methods called
+<code>registerPublicationStart()</code> and <code>registerPublicationEnd()</code>.</p>
+
+<p>The first argument of each method (<code>BaseEvent $event</code>) is automatically
+injected by <strong>easybook</strong> and it allows to access easily to any application 
+property or method. In the next section, you'll discover all the properties of 
+the <a class="internal" href="./chapter-9.html#baseevent-class">BaseEvent class</a>.</p>
+
+<div class="admonition note">
+  <p>The class of the argument injected to the plugin methods depend upon the 
+  kind of event notified. In the above code, the object is an instance of
+  <code>BaseEvent</code>, but for other events, the object is an instance of the
+  <code>ParseEvent</code> class.</p>
+</div>
+
+<p>Finally, to register the begin and the end of the book publication, you can 
+simply store the timestamp of each moment in some application properties:</p>
+
+<p>~~~ .php
+// <book>/Resources/Plugins/TimerPlugin.php
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Easybook\Events\EasybookEvents as Events;
+use Easybook\Events\BaseEvent;</p>
+
+<p>class TimerPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::PRE_PUBLISH  => 'registerPublicationStart',
+            Events::POST_PUBLISH => 'registerPublicationEnd',
+        );
+    }</p>
+
+<pre><code>public function registerPublicationStart(BaseEvent $event)
+{
+    $event-&gt;app-&gt;set('app.timer.start', microtime(true));
+}
+
+public function registerPublicationEnd(BaseEvent $event)
+{
+    $event-&gt;app-&gt;set('app.timer.finish', microtime(true));
+}
+</code></pre>
+
+<p>}
+~~~</p>
+
+<h2 id="easybook-events">9.2 Events defined by easybook</h2>
+
+<p>In order to keep things organized and to avoid the problems introduced by the
+<a href="http://en.wikipedia.org/wiki/Magic_string">magic strings</a>, <strong>easybook</strong> 
+follows the best practice of defining the event names in a special class:</p>
+
+<p>~~~ .php
+namespace Easybook\Events;</p>
+
+<p>final class EasybookEvents
+{
+    const PRE_NEW       = 'book.new.start';
+    const POST_NEW      = 'book.new.finish';
+    const PRE_PUBLISH   = 'book.publish.start';
+    const POST_PUBLISH  = 'book.publish.finish';
+    const PRE_PARSE     = 'item.parse.start';
+    const POST_PARSE    = 'item.parse.finish';
+    const PRE_DECORATE  = 'item.decorate.start';
+    const POST_DECORATE = 'item.decorate.finish';
+}
+~~~</p>
+
+<p>The following table explains when is each event notified and the kind of event object injected to the subscriber methods:</p>
+
+<div class="table" id="table-9-1">
+
+    <table>
+<thead>
+<tr>
+  <th>Event</th>
+  <th>Injected Object</th>
+  <th>Notification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>PRE_NEW</code></td>
+  <td><code>BaseEvent</code></td>
+  <td>When creating a new book, after validating its title and before creating the file and directory structure</td>
+</tr>
+<tr>
+  <td><code>POST_NEW</code></td>
+  <td><code>BaseEvent</code></td>
+  <td>When creating a new book, after creating its file and directory structure and before displaying the success message to the user</td>
+</tr>
+<tr>
+  <td><code>PRE_PUBLISH</code></td>
+  <td><code>BaseEvent</code></td>
+  <td>When publishing a book, after all its configuration has been loaded and validated and after executing the <code>before_publish</code> scripts</td>
+</tr>
+<tr>
+  <td><code>POST_PUBLISH</code></td>
+  <td><code>BaseEvent</code></td>
+  <td>When publishing a book, after the publication is completed and before executing the <code>after_publish</code> scripts</td>
+</tr>
+<tr>
+  <td><code>PRE_PARSE</code></td>
+  <td><code>ParseEvent</code></td>
+  <td>When publishing a book, just before each book content is transformed from Markdown into HTML</td>
+</tr>
+<tr>
+  <td><code>POST_PARSE</code></td>
+  <td><code>ParseEvent</code></td>
+  <td>When publishing a book, just after each book content is transformed from Markdown into HTML</td>
+</tr>
+<tr>
+  <td><code>PRE_DECORATE</code></td>
+  <td><code>BaseEvent</code></td>
+  <td>When publishing a book, just before each book content is decorated with the appropriate Twig template</td>
+</tr>
+<tr>
+  <td><code>POST_DECORATE</code></td>
+  <td><code>BaseEvent</code></td>
+  <td>When publishing a book, just after each book content is decorated with the appropriate Twig template</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+<h3 id="baseevent-class">9.2.1 The <code>BaseEvent</code> class</h3>
+
+<p>This is the generic event class that it's used by most of the event 
+notifications. It only defines one property:</p>
+
+<ul>
+<li><code>app</code>, it stores the object that represents the whole <strong>easybook</strong> application. Access to any application property with <code>$event-&gt;app['property_name']</code> and modify any property with <code>$event-&gt;app['property_name'] = 'property_value';</code></li>
+</ul>
+
+<p>In addition, it defines two methods:</p>
+
+<ul>
+<li><code>getItem()</code>, it returns the active book item. When used for example with 
+the <code>PRE_DECORATE</code> event, it stores the book item that is about to be
+decorated with the Twig template.</li>
+<li><code>setItem(array $item)</code>, it allows you to replace the active item by the
+given item. This way you can modify any item configuration or event the
+whole item content.</li>
+</ul>
+
+<h3 id="parseevent-class">9.2.2 The <code>ParseEvent</code> class</h3>
+
+<p>This class extends the previous <code>BaseEvent</code> class and adds new methods to ease
+the access to the properties of the item being parsed. The only property
+defined by this class is the same <code>app</code> property explained in the previous
+section.</p>
+
+<p>This class defines four methods:</p>
+
+<ul>
+<li><code>getItem()</code>, it returns the active item that it's being parsed.</li>
+<li><code>setItem(array $item)</code>, it allows you to replace the active item being 
+parsed with your own item.</li>
+<li><code>getItemProperty($key)</code>, it returns the value of the given <code>$key</code> property
+of the item. To get for example the original Markdown content of the item
+being parsed, use <code>$event-&gt;getItemProperty('original')</code></li>
+<li><code>setItemProperty($key, $value)</code>, it modifies the value of the <code>$key</code> property
+of the item with the <code>$value</code> content. To replace for example the original
+Markdown content of the item being parsed, use
+<code>$event-&gt;setItemProperty('original', '...')</code></li>
+</ul>
+
+<h2 id="creating-an-advanced-plugin">9.3 Creating an advanced plugin</h2>
+
+<h3 id="subscribing-to-several-events">9.3.1 Subscribing to several events</h3>
+
+<p>In order to write more legible code, you may want to split the plugin 
+operations into several methods. When subscribing to the event, instead of
+passing a simple string with the method name, pass an array with all the 
+method names:</p>
+
+<p>~~~ .php
+class MyPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            // three different methods subscribed to the same event
+            Events::PRE_PUBLISH  => array(
+                'registerPublicationStart',
+                'fixPublicationDirectory',
+                'prepareBookContents',
+            )
+        );
+    }
+~~~</p>
+
+<h3 id="event-priorities">9.3.2 Event priorities</h3>
+
+<p>When several methods are subscribed to the same event, the order in which they
+are executed is determined according to these rules:</p>
+
+<ol>
+<li><strong>easybook</strong> loads the plugin classes alphabetically, so the <code>AaaPlugin</code> 
+methods are executed before the methods of the <code>BbbPlugin</code> class.</li>
+<li>Inside a single class, the methods are executed in the same order as they
+were registered.</li>
+</ol>
+
+<p>However, it's really easy to modify this behavior by setting explicitly the
+priority of each subscribed method. When subscribing to the event, instead of 
+passing a simple string with the method name, pass an array with the method 
+name and its priority:</p>
+
+<p>~~~ .php
+class MyPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::PRE_PUBLISH  => array('firstMethodName', 10),
+            Events::POST_PUBLISH => array('secondMethodName', -200),
+        );
+    }
+}
+~~~</p>
+
+<p>The priority of each method is defined as an integer (positive or negative). 
+The default priority is <code>0</code> and higher values mean more priority. You can also
+set priority when subscribing several methods to the same event:</p>
+
+<p>~~~ .php
+class MyPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            // three different methods subscribed to the same event
+            Events::PRE_PUBLISH  => array(
+                array('firstMethodName', 10),
+                array('secondMethodName', 20),
+                array('thirdMethodName', 30),
+            )
+        );
+    }
+}
+~~~</p>
+
+<h3 id="restricting-the-plugin-execution">9.3.3 Restricting the plugin execution</h3>
+
+<p>Sometimes the execution of some plugin methods only make sense for a particular
+edition or for a specific edition format (e.g. only for PDF books). The easiest
+way to restrict the execution of the plugin is to get the edition being 
+published and check its name or format:</p>
+
+<p>~~~ .php
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Easybook\Events\EasybookEvents as Events;
+use Easybook\Events\BaseEvent;</p>
+
+<p>class MyPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::PRE_PUBLISH => 'myMethod',
+        );
+    }</p>
+
+<pre><code>public function myMethod(BaseEvent $event)
+{
+    if ('pdf' == $event-&gt;app-&gt;edition('format')) {
+        // this code is only executed for PDF books
+    }
+
+    if ('my_edition' == $event-&gt;app['publishing.edition']) {
+        // this code is only executed when publishing the
+        // 'my_edition' edition of the book
+    }
+}
+</code></pre>
+
+<p>}
+~~~</p>
+
+<p>You can also stop the propagation of the event to prevent other plugins' 
+methods from executing. To do so, invoke the <code>stopPropagation()</code> method of the 
+event object:</p>
+
+<p>~~~ .php
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Easybook\Events\EasybookEvents as Events;
+use Easybook\Events\BaseEvent;</p>
+
+<p>class MyPlugin implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::PRE_PUBLISH => 'myMethod',
+        );
+    }</p>
+
+<pre><code>public function myMethod(BaseEvent $event)
+{
+    // do something ...
+
+    // stop the event propagation (no other method or
+    // plugin will be executed to respond to this event)
+    $event-&gt;stopPropagation();
+}
+</code></pre>
+
+<p>}
+~~~</p>
+
+<h2 id="built-in-plugins">9.4 Built-in plugins</h2>
+
+<p><strong>easybook</strong> relies heavily on plugins to perform some of the most important
+tasks when publishing a book. The source code of these plugins is a good
+resource to learn how to develop advanced plugins:</p>
+
+<ul>
+<li><code>CodePlugin</code>, it is used for syntax highlighting the code blocks.</li>
+<li><code>ImagePlugin</code>, it decorates each image with its own Twig template and label. It also fixes the URL of the images when the books is published as a website and it generates the <code>lof</code> (<em>list of figures</em>) special content. </li>
+<li><code>LinkPlugin</code>, it fixes the internal links of the books published as websites.</li>
+<li><code>ParserPlugin</code>, it adds labels to the section headings and it performs some minor fixes in the HTML generated by the Markdown transformer.</li>
+<li><code>TablePlugin</code>, it decorates each table with its own Twig template and label. It also generates the <code>lot</code> (<em>list of tables</em>) special content. </li>
+<li><code>TimerPlugin</code>, it's used to measure the time elapsed to publish a book.</li>
+</ul>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Índice de contenidos</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-9.html#plugins">Plugins</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>9.1</span>
+                        <a class="internal" href="./chapter-9.html#creating-the-first-plugin">Creating the first plugin</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>9.2</span>
+                        <a class="internal" href="./chapter-9.html#easybook-events">Events defined by easybook</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>9.3</span>
+                        <a class="internal" href="./chapter-9.html#creating-an-advanced-plugin">Creating an advanced plugin</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>9.4</span>
+                        <a class="internal" href="./chapter-9.html#built-in-plugins">Built-in plugins</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

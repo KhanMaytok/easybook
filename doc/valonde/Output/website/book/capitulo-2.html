@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Giancarlo Ventura" />
+    <meta name="date" content="11/01/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Book contents and configuration | Valonde</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">Valonde</a></h1>
+        <p class="span3">
+                        <a href="./capitulo-1.html"><span>&larr;</span> Anterior</a>
+            
+                        <a href="./capitulo-3.html">Siguiente <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="book-contents-and-configuration"><span>Capítulo 2</span> Book contents and configuration</h1>
+        <p>This chapter explains all the available book configuration options and all the
+content types defined by <strong>easybook</strong>.</p>
+
+<h2 id="book-configuration">2.1  Book configuration</h2>
+
+<p>All the book configuration is centralized in a single file called <code>config.yml</code>
+at the root directory of the book. Usually this configuration file is divided
+into three parts:</p>
+
+<p>~~~ .yaml
+book:
+    # FIRST part: basic book information
+    title:            "..."
+    author:           "..."
+    edition:          "..."
+    language:         "..."
+    publication_date: "..."</p>
+
+<pre><code># SECOND part: book contents
+contents:
+    - ...
+    - ...
+    - ...
+
+# THIRD part: book editions
+editions:
+    edition1:
+        # ...
+    edition2:
+        # ...
+    # ...
+</code></pre>
+
+<p>~~~</p>
+
+<p>The first part of this file sets the basic book information (enclose the value
+of each option with single or double quotes):</p>
+
+<p>~~~ .yaml
+book:
+    title:            "The Origin of Species"
+    author:           "Charles Darwin"
+    edition:          "First edition"
+    language:         en
+    publication_date: "1859-11-24"
+~~~</p>
+
+<ul>
+<li><code>title</code>, sets the title of the book. By default <strong>easybook</strong> uses the 
+title that you typed when creating the book with the <code>new</code> command, but 
+you can change it if needed.</li>
+<li><code>author</code>, sets the author of the book. If the book has more than one 
+author, separate them with commas (e.g. <code>James Watson, Francis Crick</code>).</li>
+<li><code>edition</code>, sets the name of the current book edition. This is considered
+as the traditional <em>"literary edition"</em> and has nothing to do with the
+edition concept explained in the next chapter.</li>
+<li><code>language</code>, sets the language of the book contents with a two letter code
+(<code>en</code> for English, <code>es</code> for Spanish, <code>fr</code> for French, etc.) This value is
+used to generate several elements of the book, such as the labels and the
+default titles. If the book is written in several languages, set the code
+of the main book language.</li>
+<li><code>publication_date</code>, sets the publication of the book in <code>YYYY-MM-DD</code> 
+format. If you set this value as null (<code>publication_date: ~</code>) <strong>easybook</strong>
+will automatically set the publication date to the day on which the book 
+is published.</li>
+</ul>
+
+<p>The <code>contents</code> and <code>editions</code> options are explained in detail in the next
+section and in the next chapter respectively. The <code>contents</code> option defines 
+the book contents and their order. The <code>editions</code> option defines the features 
+of each edition of the book.</p>
+
+<h2 id="content-types">2.2 Content types</h2>
+
+<p>Books list their contents with the <code>contents</code> option in the <code>config.yml</code> file. 
+After creating a new book with the <code>new</code> command, its default contents are:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: toc   }
+        - { element: chapter, number: 1, content: chapter1.md }
+        - { element: chapter, number: 2, content: chapter2.md }
+~~~</p>
+
+<p>The most important option of each content is <code>element</code>, which defines its
+content type. <strong>easybook</strong> currently supports 21 content types (the following
+definitions have been <a href="http://en.wikipedia.org/wiki/Book_design">extracted from the Wikipedia</a>:</p>
+
+<ul>
+<li><code>acknowledgement</code>, often part of the preface, rather than a separate 
+section in its own right. It acknowledges those who contributed to the 
+creation of the book.</li>
+<li><code>afterword</code>, a piece of writing describing a time well after the time frame
+of the main story of the book.</li>
+<li><code>appendix</code>, is a supplemental addition to a given main work. It may correct
+errors, explain inconsistencies or otherwise detail or update the 
+information found in the main content of the book.</li>
+<li><code>author</code>, information about the book author/authors.</li>
+<li><code>chapter</code>, the most used type in regular books.</li>
+<li><code>conclusion</code>, the end of the book or document, where all of the pending
+issues are resolved or where idea and thoughts are settled.</li>
+<li><code>cover</code>, the cover of your book.</li>
+<li><code>dedication</code>, a page that usually precedes the text, in which the author
+names the person or people for whom he has written the book.</li>
+<li><code>edition</code>, information about the current edition of the book, including the
+publication date.</li>
+<li><code>epilogue</code>, a piece of writing at the end of a work of literature or drama,
+usually used to bring closure to the work.</li>
+<li><code>foreword</code>, usually written by any person other than the author of the<br />
+book. It often tells of some interaction between the writer of the 
+foreword and the story or the writer of the story.</li>
+<li><code>glossary</code>, consists of a set of definitions of words of importance to the
+work, normally alphabetized.</li>
+<li><code>introduction</code>, a beginning section which states the purpose and goals of
+the following writing.</li>
+<li><code>license</code>, information about the copyright holder or any other author or
+publisher rights that affect the book.</li>
+<li><code>lof</code> (<em>list of figures</em>), is an ordered list of the book images and
+illustrations, including their numbers and captions. The page in which the
+image is included is also shown for <code>pdf</code> type editions.</li>
+<li><code>lot</code> (<em>list of tables</em>), is an ordered list of the book data tables,
+including their numbers and captions. The page in which the table is 
+included is also shown for <code>pdf</code> type editions.</li>
+<li><code>part</code>, used to group several related chapters or appendices.</li>
+<li><code>preface</code>, generally covers the story of how the book came into being, or
+how the idea for the book was developed.</li>
+<li><code>prologue</code>, <em>written</em> by the narrator or any other character in the book.
+It's an opening to a story that establishes the setting and gives 
+background details, often some earlier story that ties into the main one, 
+and other miscellaneous information.</li>
+<li><code>title</code>, the page at or near the front which displays book title and 
+author, usually together with information relating to the publication of 
+the book.</li>
+<li><code>toc</code> (<em>table of contents</em>), a list of the parts of a book or document
+organized in the order in which the parts appear.</li>
+</ul>
+
+<p>These 21 content types defined by <strong>easybook</strong> are enough to publish most 
+books, but if you need it, you can also define your own
+<a class="internal" href="./chapter-10.html#new-content-types">new content types</a>.</p>
+
+<p>Some book items don't require any other option besides <code>element</code>:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: title }
+        - { element: license }
+        - { element: toc }
+        - { element: chapter, number: 1, content: chapter1.md }
+        - { element: chapter, number: 2, content: chapter2.md }
+        - ...
+~~~</p>
+
+<p>In any case, each book item can define the following three options:</p>
+
+<ul>
+<li><code>number</code>, the number of the item used to generate the labels of each 
+section heading (<code>1.1</code>, <code>1.2</code>, <code>1.2.1</code>, <code>1.2.2</code>, etc.). It's mostly used 
+for chapters and appendices and <strong>easybook</strong> doesn't restrict its format, 
+so you can use Roman numerals (<code>I.1</code>, <code>I.2</code>), letters (<code>A.1</code>, <code>A.2</code>) or 
+any other symbol or string.</li>
+<li><code>content</code>, the name of the file with the contents of this item. The file
+name should include the extension (<code>.md</code> in the case of Markdown). The 
+value of this option is interpreted as the relative path from your book
+<code>Contents/</code> directory, so you can add all the subdirectories you want.</li>
+<li><code>title</code>, the title of the item. In the case of chapters and appendices, 
+it's not necessary to use it, because <strong>easybook</strong> extracts automatically
+their titles from the first <code>&lt;h1&gt;</code> of the chapter/appendix content. For the
+rest of content types, it's also unnecessary to set the title because the
+default title is usually enough (and it's displayed in the same language
+of the book contents). In sum, this option is only used for <code>part</code> content
+type, which separates the book contents into parts or sections.</li>
+</ul>
+
+<h2 id="defining-book-contents">2.3 Defining book contents</h2>
+
+<p>The structure of a book can be very complex (cover, title page,
+acknowledgements, dedication, chapters, parts, etc.). <strong>easybook</strong> supports
+all the common book content types, but for now, we'll just focus on the
+chapters. You can add as many chapters as you want and each one can be as
+large or as short as you need. All you have to do is to list the book
+chapters under the <code>contents</code> option of the <code>config.yml</code> file:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: toc   }
+        - { element: chapter, number: 1, content: chapter1.md }
+        - { element: chapter, number: 2, content: chapter2.md }
+~~~</p>
+
+<p>Each line under the <code>contents</code> option defines a content of the book. Add your 
+book chapters as <code>chapter</code> elements and set their number (with the <code>number</code> 
+option) and the name of the files that hold their contents (with the <code>content</code> 
+option).</p>
+
+<p>Besides being lightning-fast, the main feature of <strong>easybook</strong> is its
+flexibility, as it never forces you to work in a certain way. Do you want to
+number your chapters in an <em>imaginative</em> way? People will think you're crazy,
+but <strong>easybook</strong> allows you to do it:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: toc   }
+        - { element: chapter, number: 100, content: chapter1.md }
+        - { element: chapter, number: 56,  content: chapter2.md }
+~~~</p>
+
+<p>Do you need letters instead of numbers? This is most appropriate for appendices instead of chapters, but <strong>easybook</strong> won't stop you from doing it:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: toc   }
+        - { element: chapter, number: A, content: chapter1.md }
+        - { element: chapter, number: B, content: chapter2.md }
+~~~</p>
+
+<p>A recommended best practice is to use long and semantic names for book content 
+files:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: toc   }
+        - { element: chapter, number: 1,
+            content: 01-publishing-your-first-book.md }
+        - { element: chapter, number: 2,
+            content: 02-book-contents-and-configuration.md }
+~~~</p>
+
+<p>The most important thing about the <code>contents</code> option is the order in which
+you list the book items. The published book will be always composed of those
+contents and in that order. Therefore, the following configuration will output 
+a book with the cover between the two chapters and the table of contents at 
+the very end (it's completely crazy, but <strong>easybook</strong> allows you to do <em>almost</em>
+anything):</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: chapter, number: 1,
+            content: 01-publishing-your-first-book.md }
+        - { element: cover }
+        - { element: chapter, number: 2,
+            content: 02-book-contents-and-configuration.md }
+        - { element: toc   }
+~~~</p>
+
+<p>By default, all content files are stored in the <code>Contents/</code> directory.
+However, if your book is complex, you can divide the contents into several
+subdirectories. Then, include the subdirectory in the <code>content</code> file path
+(don't forget to enclose it with quotes if the file path has white spaces):</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - { element: cover }
+        - { element: toc   }
+        - { element: chapter,  number: 1,
+            content: introduction/chapter1.md }
+        - { element: chapter,  number: 2,
+            content: introduction/chapter2.md }
+        - { element: chapter,  number: 3,
+            content: advanced/chapter1.md }
+        - { element: appendix, number: A,
+            content: appendices/appendixA.md }
+~~~</p>
+
+<p>The above configuration means that your book contents are distributed this
+way:</p>
+
+<p>~~~
+<book_dir>/
+    ...
+    Contents/
+        introduction/
+            chapter1.md
+            chapter2.md
+        advanced/
+            chapter1.md
+        appendices/
+            appendixA.md
+~~~</p>
+
+<h3 id="different-directories-per-book">2.3.1 Different directories per book</h3>
+
+<p>Unless stated otherwise, the books are created in the <code>doc/</code> directory of the
+<strong>easybook</strong> installation directory. If you want to save the contents in any 
+other directory, add the <code>--dir</code> option when creating and/or publishig the 
+book:</p>
+
+<p>~~~ .cli
+$ ./book new --dir="/Users/javier/books" "My First Book"
+// the book is created in "/Users/javier/books/my-first-book"</p>
+
+<p>$ ./book publish --dir="/Users/javier/books" my-first-book print
+// the book is published in
+// "/Users/javier/books/my-first-book/Output/print/book.pdf"
+~~~</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Índice de contenidos</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-2.html#book-contents-and-configuration">Book contents and configuration</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>2.1</span>
+                        <a class="internal" href="./chapter-2.html#book-configuration"> Book configuration</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>2.2</span>
+                        <a class="internal" href="./chapter-2.html#content-types">Content types</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>2.3</span>
+                        <a class="internal" href="./chapter-2.html#defining-book-contents">Defining book contents</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

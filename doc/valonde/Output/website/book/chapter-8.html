@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Javier Eguiluz" />
+    <meta name="date" content="01/11/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Publishing PDF books | easybook documentation</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">easybook documentation</a></h1>
+        <p class="span3">
+                        <a href="./chapter-7.html"><span>&larr;</span> Previous</a>
+            
+                        <a href="./chapter-9.html">Next <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="publishing-pdf-books"><span>Chapter 8.</span> Publishing PDF books</h1>
+        <p><strong>easybook</strong> can also publish books as high-quality and full-featured PDF 
+files.</p>
+
+<h2 id="requirements">8.1. Requirements</h2>
+
+<p><strong>easybook</strong> uses a third-party tool called <code>PrinceXML</code> to generate PDF books. 
+For that reason, before publishing any PDF book, download a fully-functional
+demo version of <code>PrinceXML</code> for Windows, Mac OS X or Linux at
+<a href="http://www.princexml.com/">princexml.com</a>.</p>
+
+<p>Once installed, execute the <code>prince</code> command without any argument to display
+the help of the application and to check that everything went fine:</p>
+
+<p>~~~ .cli
+$ prince
+Usage:
+  prince [OPTIONS] file.xml              Convert file.xml to file.pdf
+  prince [OPTIONS] doc.html -o out.pdf   Convert doc.html to out.pdf
+  prince [OPTIONS] FILES... -o out.pdf   Combine multiple files to out.pdf</p>
+
+<p>Try 'prince --help' for more information.
+~~~</p>
+
+<h3 id="configuration">8.1.1. Configuration</h3>
+
+<p>When publishing a <code>pdf</code> book, <strong>easybook</strong> looks for the <code>PrinceXML</code> tool in 
+the most common installation directories depending on the operating system. If
+<code>PrinceXML</code> isn't found, <strong>easybook</strong> will ask you to type the absolute path
+where you installed it:</p>
+
+<p>~~~ .cli
+$ ./book publish easybook-doc-en print</p>
+
+<p>Publishing 'print' edition of 'easybook documentation' book...</p>
+
+<p>In order to generate PDF files, PrinceXML library must be installed.</p>
+
+<p>We couldn't find PrinceXML executable in any of the following directories:
+   -> /usr/local/bin/prince
+   -> /usr/bin/prince
+   -> C:\Program Files\Prince\engine\bin\prince.exe</p>
+
+<p>If you haven't installed it yet, you can download a fully-functional
+ demo at: http://www.princexml.com/download</p>
+
+<p>If you have installed in a custom directory, please type its full
+ absolute path:</p>
+
+<blockquote>
+  <p>_
+  ~~~</p>
+</blockquote>
+
+<p>In order to avoid typing the <code>PrinceXML</code> path every time you publish a book,
+you can leverage the <strong>easybook</strong> <a class="internal" href="./chapter-10.html#global-parameters">global parameters</a> to
+set the <code>PrinceXML</code> path once for each book:</p>
+
+<p>~~~ .yaml
+easybook:
+    parameters:
+        prince.path: '/path/to/utils/PrinceXML/prince'</p>
+
+<p>book:
+    title:  '...'
+    # ...
+~~~</p>
+
+<h2 id="templates">8.2. Templates</h2>
+
+<p>The following list shows all the templates used by <code>pdf</code> format editions to
+publish the book. These are also the templates that you can override 
+<a class="internal" href="./chapter-4.html#custom-templates">using your own templates</a>:</p>
+
+<ul>
+<li>A template for each of the 21 content types: <code>acknowledgement.twig</code>,
+<code>afterword.twig</code>, <code>appendix.twig</code>, <code>author.twig</code>, <code>chapter.twig</code>,
+<code>conclusion.twig</code>, <code>cover.twig</code>, <code>dedication.twig</code>, <code>edition.twig</code>,
+<code>epilogue.twig</code>, <code>foreword.twig</code>, <code>glossary.twig</code>, <code>introduction.twig</code>,
+<code>license.twig</code>, <code>lof</code> (list of figures), <code>lot</code> (list of tables),
+<code>part.twig</code>, <code>preface.twig</code>, <code>prologue.twig</code>, <code>title.twig</code> and <code>toc.twig</code>
+(table of contents).</li>
+<li><code>book.twig</code>, this is the final template that assembles all the book
+contents.</li>
+<li><code>code.twig</code>, the template used to decorate all the code listings included 
+in the book.</li>
+<li><code>figure.twig</code>, the template used to decorate all the images included in the
+book.</li>
+<li><code>table.twig</code>, the template used to decorate all the tables included in the
+book.</li>
+</ul>
+
+<h2 id="pdf-configuration-options">8.3. Configuration options</h2>
+
+<p>Besides the <a class="internal" href="./chapter-3.html#common-edition-options">common configuration options</a>, <code>pdf</code>
+editions can also set any of the following specific options:</p>
+
+<ul>
+<li><code>isbn</code>, the ISBN-10 or ISBN-13 code of the book.</li>
+<li><code>margin</code>, sets the four margins of the printed book: <code>top</code>, <code>bottom</code>,
+<code>inner</code> and <code>outter</code>. If the book is one-sided, <code>inner</code> equals left margin 
+and <code>outter</code> equals right margin. The values of the margins can be set 
+with any CSS valid length unit (<code>1in</code>, <code>25mm</code>, <code>2.5cm</code>).</li>
+<li><code>page_size</code>, the page size of the printed book. Instead of setting the page
+dimensions, <strong>easybook</strong> uses <a href="http://www.princexml.com/doc/9.0/page-size/">named page sizes</a> such as <code>US-Letter</code>,
+<code>US-Legal</code>, <code>crown-quarto</code>, <code>A4</code>, <code>A3</code>, etc.</li>
+<li><code>two_sided</code>, if <code>true</code> the PDF file is formatted for two-sided printing, 
+which means that some blank pages will probably be inserted to ensure that
+the important contents always start at an odd page. If this option is set
+to <code>false</code>, no blank pages will be inserted.</li>
+</ul>
+
+<h2 id="book-cover">8.4. Book cover</h2>
+
+<p>Similarly to ePub books, <strong>easybook</strong> allows PDF books to override the 
+automatically generated text-based cover. If you want to use your 
+very own cover image for the <code>pdf</code> books, just create a <code>cover.pdf</code> file 
+and copy it into one of these directories: (they are listed by priority, 
+meaning that the first <code>cover.pdf</code> file found is used):</p>
+
+<ol>
+<li><code>&lt;book&gt;/Resources/Templates/&lt;edition-name&gt;/cover.pdf</code>, to use the cover
+ only for this specific <code>&lt;edition-name&gt;</code> edition.</li>
+<li><code>&lt;book&gt;/Resources/Templates/pdf/cover.pdf</code>, to use the same cover for
+ every <code>pdf</code> edition.</li>
+<li><code>&lt;book&gt;/Resources/Templates/cover.pdf</code>, produces the same result as the
+ previous option.</li>
+</ol>
+
+<p>The first option is useful when you need to use different covers for
+different PDF editions of your book (e.g. high quality cover for printing
+the book, medium quality cover for distributing the book via web, etc.)</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Table of contents</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-8.html#publishing-pdf-books">Publishing PDF books</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>8.1.</span>
+                        <a class="internal" href="./chapter-8.html#requirements">Requirements</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>8.2.</span>
+                        <a class="internal" href="./chapter-8.html#templates">Templates</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>8.3.</span>
+                        <a class="internal" href="./chapter-8.html#pdf-configuration-options">Configuration options</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>8.4.</span>
+                        <a class="internal" href="./chapter-8.html#book-cover">Book cover</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

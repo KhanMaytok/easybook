@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Javier Eguiluz" />
+    <meta name="date" content="01/11/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Themes | easybook documentation</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">easybook documentation</a></h1>
+        <p class="span3">
+                        <a href="./chapter-3.html"><span>&larr;</span> Previous</a>
+            
+                        <a href="./chapter-5.html">Next <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="themes"><span>Chapter 4.</span> Themes</h1>
+        <p>A theme is a set of templates, stylesheets and other resources that define the
+visual design of the book. <strong>easybook</strong> already includes a theme for each
+edition type (<code>epub</code>, <code>mobi</code>, <code>pdf</code>, <code>html</code>, <code>html_chunked</code>), so your books 
+will look professional without any effort.</p>
+
+<p><strong>easybook</strong> themes are located in the <code>app/Resources/Themes/</code> directory. If 
+you need to change the design of your books, <strong>don't</strong> modify those files, but
+use the overriding techniques explained in this chapter.</p>
+
+<h2 id="contents">4.1. Contents</h2>
+
+<h3 id="default-contents">4.1.1. Default contents</h3>
+
+<p>In most books, the only elements that define their own content are chapters and
+appendices (with the <code>content</code> option). For that reason, <strong>easybook</strong> defines
+sensible default contents for some content types. If your book for example
+includes a <code>license</code> content type without any content:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - ...
+        - { element: license }
+        - { element: chapter, content: 'chapter1.md' }
+        - ...
+~~~</p>
+
+<p><strong>easybook</strong> will use the following as the content for this element:</p>
+
+<p>~~~ .twig
+&copy; Copyright {{ book.publication_date|default('now')|date('Y') }},
+{{ book.author }}</p>
+
+<p><strong>ALL RIGHTS RESERVED</strong>. This book contains material protected under 
+International and Federal Copyright Laws and Treaties. Any unauthorized 
+reprint or use of this material is prohibited. No part of this book may 
+be reproduced or transmitted in any form or by any means, electronic or 
+mechanical, including photocopying, recording, or by any information
+storage  and retrieval system without express written permission from the 
+author and/or publisher.
+~~~</p>
+
+<p>The default <code>license</code> page displays a copyright notice corresponding to either
+the book publication date (if defined) or the current year. Similarly, the
+<code>title</code> content type defines the following default content:</p>
+
+<p>~~~ .twig
+<h1>{{ book.title }}</h1>
+<h2>{{ book.author }}</h2>
+<h3>{{ book.edition }}</h3>
+~~~</p>
+
+<p>The contents defined by <strong>easybook</strong> depend on both the edition being published
+and the content type. You can access these default contents at the <code>Contents/</code>
+directory of the theme.</p>
+
+<h3 id="custom-contents">4.1.2. Custom contents</h3>
+
+<p>If you don't want to use <strong>easybook</strong> default contents for some element, simply
+add the <code>content</code> option indicating the file that defines its contents:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - ...
+        - { element: license, content: creative-commons.md }
+        - { element: title,   content: my-own-title-page.md }
+        - ...
+~~~</p>
+
+<h2 id="templates">4.2. Templates</h2>
+
+<h3 id="default-templates">4.2.1. Default templates</h3>
+
+<p>The content of each element is <em>decorated</em> with a template before including it
+in the published book. <strong>easybook</strong> templates are created with <a href="http://twig.sensiolabs.org/">Twig</a>, the 
+best templating language for PHP. You can access all the default templates in 
+the <code>Templates/</code> directory of the theme.</p>
+
+<p>This is for example the template used to decorate each chapter of a PDF book:</p>
+
+<p>~~~ .twig
+<div class="item chapter">
+    <h1 id="{{ item.slug }}">
+        <span>{{ item.label }}</span> {{ item.title }}
+    </h1></p>
+
+<pre><code>{{ item.content }}
+</code></pre>
+
+<p></div>
+~~~</p>
+
+<p>The data of the book item being decorated is accessible through a special
+variable called <code>item</code>, which stores the following properties:</p>
+
+<ul>
+<li><code>item.title</code>, is the title of the book item. By order of priority, this 
+value is obtained from 1) the <code>title</code> configuration option of the item,
+2) the <code>&lt;h1&gt;</code> title of the item content, 3) the default title defined by
+<strong>easybook</strong> for this kind of element.</li>
+<li><code>item.slug</code>, is a <em>safe</em> version of the <code>title</code> that doesn't include white
+spaces or any other <em>troublesome characters</em> (such as accents, <code>.</code>, <code>?</code>,
+<code>!</code>, ...). This value is used on URLs, on <code>id</code> HTML attributes, etc.</li>
+<li><code>item.label</code>, the label of the main heading of the item. Usually it's
+only defined for chapters (<code>Chapter XX</code>), parts (<code>Part XX</code>) and appendices
+(<code>Apendix XX</code>).</li>
+<li><code>toc</code>, array with the table of contents of this item. It's empty for 
+most of the content types (<code>cover</code>, <code>license</code>, etc.) but can be very 
+large for complex chapters and appendices.</li>
+<li><code>item.content</code>, the content of the item prepared to be included in the
+book (it has already been converted from its original Markdown format).</li>
+<li><code>item.original</code>, the original content of the item without any modification.</li>
+<li><code>item.config</code>, array with all the configuration options defined for the
+item in the <code>config.yml</code> file. Internally it stores the <code>number</code>, <code>title</code>,
+<code>content</code> and <code>element</code> properties. For example, you can access the type of
+the item with the following expression: <code>{{ item.config.element }}</code>.</li>
+</ul>
+
+<p>Images and tables are decorated with special templates called <code>figure.twig</code> and
+<code>table.twig</code> which have access to the following variables:</p>
+
+<ul>
+<li><code>item.caption</code>, is the title of the image/table as indicated in the
+ original content.</li>
+<li><code>item.content</code>, is the complete HTML code generated to display the image/
+ table in the book (<code>&lt;img src="..." alt="..." /&gt;</code> or
+ <code>&lt;table&gt; ... &lt;/ table&gt;</code>).</li>
+<li><code>item.label</code>, is the label of the image/table. This value is empty unless
+ the <code>labels</code> option of the edition includes <code>figure</code> and/or <code>table</code>.</li>
+<li><code>item.number</code>, is the autogenerated number of the image/table inside the
+ item being processed. The first image/table is considered to be the number
+ <code>1</code> and the following are increased by one.</li>
+<li><code>element.number</code>, is the number of the parent element (chapter, appendix,
+ etc.) of the image/table. This property will be for example <code>5</code> for all 
+ the images/tables included in the chapter number <code>5</code> of the book.</li>
+</ul>
+
+<p>In addition to these properties, all the <strong>easybook</strong> templates have access to
+three global variables:</p>
+
+<ul>
+<li><code>book</code>, provides direct access to the configuration options defined under
+<code>book</code> in <code>config.yml</code> file. You can access for example the book author in 
+any template using <code>{{ book.author }}</code> and the current <strong>easybook</strong> 
+version using <code>{{ book.generator.version }}</code>.</li>
+<li><code>edition</code>, provides direct access to the configuration options of the 
+edition currently being published.</li>
+<li><code>app</code>, provides direct access to all the configuration options and 
+services of <strong>easybook</strong> (defined in the
+<code>src/DependencyInjection/Application.php</code> file).</li>
+</ul>
+
+<h3 id="custom-templates">4.2.2. Custom templates</h3>
+
+<p>If you want to fine-tune the appearance of your book, you can start by using
+your own templates instead the default ones. First, create a directory called
+<code>Resources/</code> within the directory of your book and inside it, create another 
+directory called <code>Templates/</code>.</p>
+
+<p>You can now define your own templates in the <code>Resources/Templates/</code> to apply
+them to the published book. The name of the template must match the item type
+(<code>chapter</code>, <code>dedication</code>, <code>author</code>, etc..) and its extension should be
+<code>.twig</code> because they are always created with the Twig templating language. 
+Consequently, if you want to modify the design of the chapters, you must 
+create a template called <code>chapter.twig</code> in the <code>&lt;book&gt;/Resources/Templates/</code>
+directory.</p>
+
+<p>When a book is published, each book item is decorated with its own template.
+<strong>easybook</strong> looks for each template in the following directories (showed in
+order of priority). If none of these templates are found, it will use the 
+default template:</p>
+
+<ol>
+<li><code>&lt;book&gt;/Resources/Templates/&lt;edition-name&gt;/template.twig</code>, allows you to
+ modify the design for each edition. The directory inside <code>Templates/</code> must
+ match exactly the name of the edition being published.</li>
+<li><code>&lt;book&gt;/Resources/Templates/&lt;edition-type&gt;/template.twig</code>, allows you to
+ modify the design for all the editions of the same format. The directory 
+ inside <code>Templates/</code> must be named <code>epub</code>, <code>mobi</code>, <code>html</code>, <code>html_chunked</code> 
+ or <code>pdf</code>.</li>
+<li><code>&lt;book&gt;/Resources/Templates/template.twig</code>, applies the same same design
+ to all editions. The template is located in the <code>Resources/Templates</code> 
+ directory without including it in any subdirectory. This option is rarely 
+ used because it usually doesn't make sense to apply the same style 
+ regardless of whether content is converted into a PDF file or a website.</li>
+</ol>
+
+<p>As explained in the <a class="internal" href="./chapter-4.html#default-templates">previous section</a>, the templates have 
+access to a variable named <code>item</code> with all the information about the item that 
+is being decorated and three global variables with information about the book
+(<code>book</code>), the edition being published (<code>edition</code>) and the entire application
+(<code>app</code>).</p>
+
+<p>In addition to the templates associated with the book item (<code>chapter.twig</code>, 
+etc.) each edition format defines several special templates, as explained in
+the following chapters.</p>
+
+<h2 id="styles">4.3. Styles</h2>
+
+<p><strong>easybook</strong> uses CSS stylesheets to define the visual design of the books, 
+even for the <code>epub</code> and <code>pdf</code> type editions.</p>
+
+<h3 id="default-styles">4.3.1. Default styles</h3>
+
+<p><strong>easybook</strong> applies by default some styling to the book that depends on the
+selected <code>theme</code> and the edition being published. If you want to disable these
+styles for a specific edition, set its <code>include_styles</code> option to <code>false</code> and
+no default style will be applied to the book.</p>
+
+<p>The CSS styles for each format are defined in the <code>styles.css.twig</code> file
+located at the <code>&lt;theme&gt;/&lt;edition-format&gt;/Templates/</code> directory of the theme.
+The CSS styles applied to the book vary greatly depending on the format of the
+published edition:</p>
+
+<ul>
+<li><code>epub</code> and <code>mobi</code>: CSS styling is pretty limited due to the abysmal 
+support of most e-book readers.</li>
+<li><code>html</code> and <code>html_chunked</code>: the only limit is the highest CSS version 
+that you can use on your website (CSS 2.1, CSS 3, CSS 4, etc..) because 
+every modern web browser offers an excellent CSS support.</li>
+<li><code>pdf</code>: your imagination is the limit. PDF books are generated by
+<a href="http://www.princexml.com/">PrinceXML</a>, which defines tens of new CSS properties and options 
+unavailable in the CSS standards.</li>
+</ul>
+
+<h3 id="custom-styles">4.3.2. Custom styles</h3>
+
+<p>In addition to the <strong>easybook</strong> default styles, your book can define its own
+CSS styles to tweak its design. Unless you need a complete redesign of the 
+book, it's recommended to maintain the default <strong>easybook</strong> styles
+(<code>include_styles</code> option set to <code>true</code>) and then apply your custom CSS to 
+include new styles or modify them. To do this, add a file called <code>style.css</code> 
+within any of these directories:</p>
+
+<ol>
+<li><code>&lt;book&gt;/Resources/Templates/&lt;edition-name&gt;/style.css</code>, if you want to
+ apply the styles just to one specific edition.</li>
+<li><code>&lt;book&gt;/Resources/Templates/&lt;edtion-type&gt;/style.css</code>, if you want to apply
+ the same styles to all the editions of the same type (<code>epub</code>, <code>mobi</code>,
+ <code>html</code>, <code>html_chunked</code> or <code>pdf</code>).</li>
+<li><code>&lt;book&gt;/Resources/Templates/style.css</code>, if you want to apply the same
+ styles to all the editions of the book.</li>
+</ol>
+
+<p>Instead of creating this CSS file by hand, <strong>easybook</strong> includes a command called <code>customize</code> that generates the needed CSS for each edition. The first
+argument of the command is the book directory and the second argument is the
+name of the edition to be customized:</p>
+
+<p>~~~ .cli
+$ ./book customize my-book ebook</p>
+
+<p>OK: You can now customize the book design with the following stylesheet:
+<easybook-dir>/doc/my-book/Resources/Templates/ebook/style.css
+~~~</p>
+
+<p>The CSS file generated with the <code>customize</code> command is different for every 
+edition format (<code>html</code>, <code>pdf</code>, <code>epub</code>, <code>mobi</code>) and it includes some comments 
+to ease the customization of the book design.</p>
+
+<h2 id="fonts">4.4. Fonts</h2>
+
+<h3 id="default-fonts">4.4.1. Default fonts</h3>
+
+<p><strong>easybook</strong> bundles several free and high-quality fonts to make published 
+books look professional. You can see the fonts and their license in the
+<code>app/Resources/Fonts/</code> directory.</p>
+
+<h2 id="labels-and-titles">4.5. Labels and titles</h2>
+
+<h3 id="default-labels-and-titles">4.5.1. Default labels and titles</h3>
+
+<p><strong>easybook</strong> requires each content to have its own <strong>title</strong>. Define the title 
+of each item with the <code>title</code> configuration option:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    contents:
+        - ...
+        - { element: part, title: 'Introduction' }
+        - { element: chapter, number: 1, content: chapter1.md }
+        - { element: chapter, number: 2, content: chapter2.md }
+        - { element: part, title: 'Advanced Concepts' }
+        - { element: chapter, number: 3, content: chapter3.md }
+        - ...
+~~~</p>
+
+<p>Chapters and appendices don't have to explicitly set their title in the
+<code>config.yml</code> file. The reason is that <strong>easybook</strong> looks for the first <code>&lt;h1&gt;</code>
+heading of the chapter or appendix and considers it as the title.</p>
+
+<p>For the rest of items, if you don't set explicitly their titles, <strong>easybook</strong> 
+assigns them a default title that varies depending on the language in which 
+the book is written. The following are for example the default titles applied 
+to English books (as defined in the <code>app/Resources/Translations/titles.en.yml</code>
+file):</p>
+
+<p>~~~ .yaml
+title:
+    acknowledgement: 'Acknowledgements'
+    afterword:       'Afterword'
+    author:          'About the author'
+    conclusion:      'Conclusion'
+    cover:           'Cover'
+    dedication:      'Dedication'
+    edition:         'About this edition'
+    epilogue:        'Epilogue'
+    foreword:        'Foreword'
+    glossary:        'Glossary'
+    introduction:    'Introduction'
+    license:         'License'
+    lof:             'List of Figures'
+    lot:             'List of Tables'
+    preface:         'Preface'
+    prologue:        'Prologue'
+    title:           'Title'
+    toc:             'Table of contents'
+~~~</p>
+
+<p>Moreover, the book can add <strong>labels</strong> (<code>Chapter XX</code>, <code>Appendix XX</code>, etc.) to 
+the section titles using the <code>labels</code> option. As explained before, this option 
+indicates the content types for which labels are added automatically.</p>
+
+<p>Unless you modify this option, books only add labels in chapters and 
+appendices. The default labels also depend on the language in which the book 
+is written. The labels applied for English books are defined in the
+<code>app/Resources/Translations/labels.en.yml</code> file.</p>
+
+<p>Unlike the titles, labels can contain variable parts, such as the appendix or
+chapter number. Therefore, <strong>easybook</strong> uses Twig templates to define each 
+label:</p>
+
+<p>~~~ .yaml
+label:
+    figure: 'Figure {{ element.number }}.{{ item.number }}'
+    part:   'Part {{ item.number }}'
+    table:  'Table {{ element.number }}.{{ item.number }}'
+~~~</p>
+
+<p>The <code>figure</code> and <code>table</code> labels can use the same variables as the <code>figure.twig</code>
+and <code>table.twig</code> templates explained previously in the
+<a class="internal" href="./chapter-4.html#default-templates">default templates</a> section. Therefore, <code>{{ item.number }}</code>
+shows the autogenerated number of the image/table and <code>{{ element.number }}</code> 
+shows the number of the chapter or appendix.</p>
+
+<p>Chapters and appendices must define six different labels, each corresponding to
+one of the six heading levels (<code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code>, <code>&lt;h4&gt;</code>, <code>&lt;h5&gt;</code> and
+<code>&lt;h6&gt;</code>). In the following example, appendices only include a label in their 
+titles, thus leaving empty the last five levels:</p>
+
+<p>~~~ .yaml
+label:
+    appendix:
+        - 'Appendix {{ item.number }}'
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+~~~</p>
+
+<p>Labels can access to all configuration options defined by the item in the
+<code>config.yml</code> file. The label of a chapter can then use <code>{{ item.number }}</code> to
+show the number of the chapter. In addition to these properties, label 
+templates have access to two special variables called <code>level</code> and <code>counters</code>.</p>
+
+<p>The <code>level</code> variable indicates the section heading level for which you want to
+get the label, being <code>1</code> the level of <code>&lt;h1&gt;</code> heading and <code>6</code> the level of
+<code>&lt;h6&gt;</code> headings. The <code>counters</code> variable is an array with the counters of all 
+heading levels. For that reason, to show second-level headings as <code>1.1</code>, <code>1.2</code> 
+... <code>7.1</code>, <code>7.2</code> you can use the following expression:</p>
+
+<p>~~~ .yaml
+label:
+    chapter:
+        - 'Chapter {{ item.number }}'
+        - '{{ item.counters[0] }}.{{ item.counters <a href="http://twig.sensiolabs.org/">1</a> }}'
+        - ...
+~~~</p>
+
+<p>Extending the previous example, you can use the following templates to format
+all the heading levels as <code>1.1</code>, <code>1.1.1</code>, <code>1.1.1.1</code>, etc.:</p>
+
+<p>~~~ .yaml
+label:
+    chapter:
+        - 'Chapter {{ item.number }} '
+        - '{{ item.counters[0:2]|join(".") }}'  # 1.1
+        - '{{ item.counters[0:3]|join(".") }}'  # 1.1.1
+        - '{{ item.counters[0:4]|join(".") }}'  # 1.1.1.1
+        - '{{ item.counters[0:5]|join(".") }}'  # 1.1.1.1.1
+        - '{{ item.counters[0:6]|join(".") }}'  # 1.1.1.1.1.1
+~~~</p>
+
+<p>This last example clearly shows what you can achieve by combining the
+flexibility of <strong>easybook</strong> and the power of Twig.</p>
+
+<h3 id="custom-labels-and-titles">4.5.2. Custom labels and titles</h3>
+
+<p>If you want to use your own titles and labels, you must first create the
+<code>Translations</code> directory inside the <code>Resources</code> directory of your book (you 
+must also create the latter if it doesn't exist). Then add the new label file 
+in one of the following directories:</p>
+
+<ol>
+<li><code>&lt;book&gt;/Resources/Translations/&lt;edition-name&gt;/labels.en.yml</code>, if you want
+  to change the labels in a single edition. The subdirectory of
+  <code>Translations</code> must be named exactly like the edition being published.</li>
+<li><code>&lt;book&gt;/Resources/Translations/&lt;edition-type&gt;/labels.en.yml</code>, if you want
+  to change the labels in all editions of the same type. The directory in
+  <code>Translations</code> can only be named <code>epub</code>, <code>mobi</code>, <code>pdf</code>, <code>html</code>, or
+  <code>html_chunked</code>.</li>
+<li><code>&lt;book&gt;/Resources/Translations/labels.en.yml</code>, if you want to change the
+  labels on all the editions of the book, regardless of its name or type.</li>
+</ol>
+
+<p>When you use your own label file, you don't have to define the value of all
+labels. Add only the labels that you want to modify and <strong>easybook</strong> will 
+assign to the rest their default values. Therefore, to only modify the label 
+of the images in any book edition, create a new
+<code>&lt;book&gt;/Resources/Translations/labels.en.yml</code> file and add just the following 
+content:</p>
+
+<p>~~~ .yaml
+label:
+    figure: 'Illustration {{ item.number }}'
+~~~</p>
+
+<p>If you want to change the titles instead of the labels, follow the same steps
+but create a file called <code>titles.en.yml</code> instead of <code>labels.en.yml</code>. If your 
+book isn't written in English, replace <code>en</code> for the code of the other language 
+(e.g. <code>labels.es.yml</code> for Spanish labels).</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Table of contents</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-4.html#themes">Themes</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>4.1.</span>
+                        <a class="internal" href="./chapter-4.html#contents">Contents</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>4.2.</span>
+                        <a class="internal" href="./chapter-8.html#templates">Templates</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>4.3.</span>
+                        <a class="internal" href="./chapter-4.html#styles">Styles</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>4.4.</span>
+                        <a class="internal" href="./chapter-4.html#fonts">Fonts</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>4.5.</span>
+                        <a class="internal" href="./chapter-4.html#labels-and-titles">Labels and titles</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

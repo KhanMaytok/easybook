@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Javier Eguiluz" />
+    <meta name="date" content="01/11/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Publishing EPUB books | easybook documentation</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">easybook documentation</a></h1>
+        <p class="span3">
+                        <a href="./chapter-5.html"><span>&larr;</span> Previous</a>
+            
+                        <a href="./chapter-7.html">Next <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="publishing-epub-books"><span>Chapter 6.</span> Publishing EPUB books</h1>
+        <p>EPUB books published with <strong>easybook</strong> are compatible with most e-book readers.
+The only notable exception are the Kindle readers, that require MOBI format
+ebooks (as explained in the next chapter).</p>
+
+<h2 id="templates">6.1. Templates</h2>
+
+<p>The following list shows all the templates used by <code>epub</code> format editions to
+publish the book. These are also the templates that you can override 
+<a class="internal" href="./chapter-4.html#custom-templates">using your own templates</a>:</p>
+
+<ul>
+<li><code>code.twig</code>, <code>figure.twig</code>, <code>chunk.twig</code>, <code>layout.twig</code> and <code>table.twig</code> 
+are the same templates and have the same meaning as for the <code>html_chunked</code> 
+edition (<a class="internal" href="./chapter-5.html#html-templates">see <code>html_chunked</code> templates</a>).</li>
+<li><code>cover.twig</code>, the template used to generate the book cover when the book
+doesn't include its own cover (see the <a class="internal" href="./chapter-6.html#epub-cover">book cover section</a> 
+bellow).</li>
+<li><code>content.opf.twig</code>, the template that generates the <code>content.opf</code> file 
+listing all the book contents (including its fonts, images and CSS styles).</li>
+<li><code>toc.ncx.twig</code>, the template that generates the <code>toc.ncx</code> file for the book
+table of contents.</li>
+<li><code>container.xml.twig</code> y <code>mimetype.twig</code>, templates that generate other minor
+but necessary files for <code>.epub</code> format books. Override these templates only
+if you really know what you're doing, because otherwise, the book won't be
+properly generated.</li>
+</ul>
+
+<h2 id="epub-cover">6.2. Book cover</h2>
+
+<p><strong>easybook</strong> automatically generates a text-based cover for your book, 
+containing both the book title and its author name. If you want to use your 
+very own cover image for the <code>epub</code> books, just create a <code>cover.jpg</code> file 
+and copy it into one of these directories:</p>
+
+<ol>
+<li><code>&lt;book&gt;/Resources/Templates/&lt;edition-name&gt;/cover.jpg</code>, to use the image
+ only for this specific <code>&lt;edition-name&gt;</code> edition.</li>
+<li><code>&lt;book&gt;/Resources/Templates/epub/cover.jpg</code>, to use the same cover image
+ for every <code>epub</code> edition.</li>
+</ol>
+
+<p>The cover image format must be JPEG, because this is the most supported format
+in e-book readers. In order to visualize it correctly in advanced readers such
+as the iPad, create a large color image (at least 800 pixel height).</p>
+
+<h2 id="code-highlighting">6.3. Code highlighting</h2>
+
+<p>The support of fixed-width fonts in current e-book readers is abysmal. For 
+that reason, syntax highlighting doesn't work as expected. The configuration 
+options are the same as for any other format (<code>highlight_code</code> and
+<code>highlight_cache</code>) but the actual result depends completely on the e-book 
+reader used to read the book.</p>
+
+<p>The following screenshot shows a comparison of the same highlighted code 
+displayed in a browser (<code>html</code> edition) and in a desktop application to read
+e-books (<code>epub</code> edition):</p>
+
+<div class="figure" id="figure-6-1">
+    <img src="/img/doc-en/syntax_highlighting_browser_vs_app.png" alt="Syntax highlighting in the browser vs an epub application" />
+
+    <p class="caption"><strong>Figure 6.1</strong> Syntax highlighting in the browser vs an epub application</p>
+</div>
+
+
+<p>In advanced e-book readers such as the iPad, the code respects the syntax
+highlighting, but any highlighted code is displayed in the regular book font,
+instead of the fixed-width font of the non-highlighted code:</p>
+
+<div class="figure" id="figure-6-2">
+    <img src="/img/doc-en/syntax_highlighting_browser_vs_ipad.png" alt="Syntax highlighting in the browser vs the iPad" />
+
+    <p class="caption"><strong>Figure 6.2</strong> Syntax highlighting in the browser vs the iPad</p>
+</div>
+
+
+<p>Considering the actual support for syntax highlighting in e-book readers, it's
+strongly recommended to disable the code highlighting for epub editions:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    editions:
+        ebook:
+            format:         epub
+            highlight_code: false
+            # ...
+~~~</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Table of contents</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-6.html#publishing-epub-books">Publishing EPUB books</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>6.1.</span>
+                        <a class="internal" href="./chapter-8.html#templates">Templates</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>6.2.</span>
+                        <a class="internal" href="./chapter-6.html#epub-cover">Book cover</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>6.3.</span>
+                        <a class="internal" href="./chapter-6.html#code-highlighting">Code highlighting</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

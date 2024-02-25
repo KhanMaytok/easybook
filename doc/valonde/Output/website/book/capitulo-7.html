@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Giancarlo Ventura" />
+    <meta name="date" content="11/01/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Publishing MOBI books | Valonde</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">Valonde</a></h1>
+        <p class="span3">
+                        <a href="./capitulo-6.html"><span>&larr;</span> Anterior</a>
+            
+                        <a href="./capitulo-8.html">Siguiente <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="publishing-mobi-books"><span>Capítulo 7</span> Publishing MOBI books</h1>
+        <p>MOBI books published with <strong>easybook</strong> are compatible with the Kindle e-book 
+readers.</p>
+
+<h2 id="requirements">7.1 Requirements</h2>
+
+<p><strong>easybook</strong> uses a free third-party tool called <code>Kindlegen</code> to generate MOBI 
+books. For that reason, before publishing any MOBI book, download <code>Kindlegen</code>
+for Windows, Mac OS X or Linux at <a href="http://amzn.to/kindlegen">amzn.to/kindlegen</a>.</p>
+
+<p>Once installed, execute the <code>kindlegen</code> command without any argument to display
+the help of the application and to check that everything went fine:</p>
+
+<p>~~~ .cli
+$ kindlegen</p>
+
+<hr />
+
+<p>Amazon kindlegen V2.9 build 0523-9bd8a95
+ A command line e-book compiler
+ Copyright Amazon.com and its Affiliates 2013</p>
+
+<hr />
+
+<p>Usage : kindlegen [filename.opf/.htm/.html/.epub/.zip or directory]
+        [-c0 or -c1 or c2] [-verbose] [-western] [-o <file name>]
+Options:
+   -c0: no compression
+   -c1: standard DOC compression
+   -c2: Kindle huffdic compression</p>
+
+<p>-o <file name>: Specifies the output file name. Output file will
+      be created in the same directory as that of input file.
+      <file name> should not contain directory path.</p>
+
+<p>-verbose: provides more information during ebook conversion</p>
+
+<p>-western: force build of Windows-1252 book</p>
+
+<p>-releasenotes: display release notes</p>
+
+<p>-gif: images are converted to GIF format (no JPEG in the book)</p>
+
+<p>-locale <locale option> : To display messages in selected language
+~~~</p>
+
+<h3 id="configuration">7.1.1 Configuration</h3>
+
+<p>When publishing a <code>mobi</code> book, <strong>easybook</strong> looks for the <code>kindlegen</code> tool in 
+the most common installation directories depending on the operating system. If
+<code>kindlegen</code> isn't found, <strong>easybook</strong> will ask you to type the absolute path
+where you installed it:</p>
+
+<p>~~~ .cli
+$ ./book publish easybook-doc-en kindle</p>
+
+<p>Publishing 'kindle' edition of 'easybook documentation' book...</p>
+
+<p>In order to generate MOBI ebooks, KindleGen library must be installed.</p>
+
+<p>We couldn't find KindleGen executable in any of the following directories:
+   -> /usr/local/bin/kindlegen
+   -> /usr/bin/kindlegen
+   -> c:\KindleGen\kindlegen</p>
+
+<p>If you haven't installed it yet, you can download it freely from
+ Amazon at: http://amzn.to/kindlegen</p>
+
+<p>If you have installed it in a custom directory, please type its
+ full absolute path:</p>
+
+<blockquote>
+  <p>_
+  ~~~</p>
+</blockquote>
+
+<p>In order to avoid typing the <code>kindlegen</code> path every time you publish a book,
+you can leverage the <strong>easybook</strong> <a class="internal" href="./chapter-10.html#global-parameters">global parameters</a> to
+set the <code>kindlegen</code> path once for each book:</p>
+
+<p>~~~ .yaml
+easybook:
+    parameters:
+        kindlegen.path: '/path/to/utils/KindleGen/kindlegen'</p>
+
+<p>book:
+    title: '...'
+    # ...
+~~~</p>
+
+<p>In addition to the <code>kindlegen</code> path, you can also tweak the options of the
+<code>kindlegen</code> command with the <code>kindlegen.command_options</code> global parameter:</p>
+
+<p>~~~ .yaml
+easybook:
+    parameters:
+        kindlegen.path: '/path/to/utils/KindleGen/kindlegen'
+        kindlegen.command_options: '-c0 -gif verbose'</p>
+
+<p>book:
+    title: '...'
+    # ...
+~~~</p>
+
+<h2 id="templates">7.2 Templates</h2>
+
+<p>The <code>mobi</code> edition format defines the same ten templates of the <code>epub</code> format.
+The reason is that <code>mobi</code> books are first generated as <code>epub</code> books and then
+transformed into <code>mobi</code> books using the <code>kindlegen</code> tool:</p>
+
+<ul>
+<li><code>code.twig</code>, <code>figure.twig</code>, <code>chunk.twig</code>, <code>layout.twig</code> and <code>table.twig</code> 
+are the same templates and have the same meaning as for the <code>html_chunked</code> 
+edition.</li>
+<li><code>cover.twig</code>, the template used to generate the book cover, which can also
+use your own image, as explained in the next sections.</li>
+<li><code>content.opf.twig</code>, the template that generates <code>content.opf</code> file listing
+all the book contents.</li>
+<li><code>toc.ncx.twig</code>, the template that generates the <code>toc.ncx</code> file for the book
+table of contents.</li>
+<li><code>container.xml.twig</code> y <code>mimetype.twig</code>, templates that generate other minor
+but necessary files for <code>.epub</code> format books.</li>
+</ul>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Índice de contenidos</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-7.html#publishing-mobi-books">Publishing MOBI books</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>7.1</span>
+                        <a class="internal" href="./chapter-8.html#requirements">Requirements</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>7.2</span>
+                        <a class="internal" href="./chapter-8.html#templates">Templates</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

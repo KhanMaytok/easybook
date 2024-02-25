@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Giancarlo Ventura" />
+    <meta name="date" content="11/01/2024"/>
+    <meta name="generator" content="easybook 5"/>
+
+    <title>Editions | Valonde</title>
+
+    <link rel="stylesheet" href="./css/easybook.css" />
+
+</head>
+
+<body class="item chapter">
+<div class="container">
+<div class="menu">
+    <div class="row">
+        <h1 class="span9"><a href="./index.html">Valonde</a></h1>
+        <p class="span3">
+                        <a href="./capitulo-2.html"><span>&larr;</span> Anterior</a>
+            
+                        <a href="./capitulo-4.html">Siguiente <span>&rarr;</span></a>
+                    </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <h1 id="editions"><span>Capítulo 3</span> Editions</h1>
+        <p><strong>easybook</strong> allows you to publish the very same book in radically different 
+ways. This is possible thanks to the <strong>editions</strong>, that define the specific 
+characteristics of the published book.</p>
+
+<p>Editions are defined under the <code>editions</code> option in the <code>config.yml</code> file. By
+default, the books created with the <code>new</code> command define five editions named
+<code>ebook</code>, <code>kindle</code>, <code>print</code>, <code>web</code> and <code>website</code>:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    editions:
+        ebook:
+            format:  epub
+            # ...</p>
+
+<pre><code>    kindle:
+        extends: ebook
+        format:  mobi
+
+    print:
+        format:  pdf
+        # ...
+
+    web:
+        format:  html
+        # ...
+
+    website:
+        extends: web
+        format:  html_chunked
+</code></pre>
+
+<p>~~~</p>
+
+<h2 id="edition-formats">3.1 Edition formats</h2>
+
+<p>A single book can define as many editions as needed. The only requirement is
+that the name of each edition must be unique for the same book and cannot contain white spaces.</p>
+
+<p>Each edition is published at the <code>Output/</code> directory of the book, in a
+subdirectory named after the edition name. You can define any number of 
+editions, but all of them must belong to one of the following five types 
+defined by the <code>format</code> option:</p>
+
+<ul>
+<li><code>epub</code>, the book is published as an e-book named <code>book.epub</code>.</li>
+<li><code>mobi</code>, the book is published as a Kindle-compatible e-book named
+<code>book.mobi</code>.</li>
+<li><code>pdf</code>, the book is published as a PDF file named <code>book.pdf</code>.</li>
+<li><code>html</code>, the book is published as a HTML page named <code>book.html</code>.</li>
+<li><code>html_chunked</code>, the book is published as a static website in a directory
+named <code>book/</code>.</li>
+</ul>
+
+<h2 id="configuration-options">3.2 Configuration options</h2>
+
+<p>The purpose of the editions is to define a set of unique characteristics for 
+the published book. This is done with the several configuration options defined
+by <strong>easybook</strong> for the editions. Some of these options are common for every
+edition format and others are specific to each format.</p>
+
+<h3 id="common-edition-options">3.2.1 Common configuration options</h3>
+
+<ul>
+<li><code>highlight_code</code>, this option is only useful for technical books that 
+include code listings. If <code>true</code>, the syntax of the code is highlighted.</li>
+<li><code>highlight_cache</code>, this option is only useful for technical books that 
+include source code. If <code>true</code>, all the highlighted code listings will be 
+cached to boost book publishing performance. By default this cache is 
+disabled because it's only appropriate for complex books that are 
+generated regularly.</li>
+<li><code>include_styles</code>, if <code>true</code> <strong>easybook</strong> default CSS styles are applied to
+the published book. If you want to fully customize the design of your 
+book, don't apply these styles. However, most of the time it's better to
+apply thee default styles and tweak the design with the <code>customize</code> 
+command.</li>
+<li><code>labels</code>, sets the content types for which <strong>easybook</strong> will add labels
+to their section headings. By default labels are only added to headings of
+chapters and appendices. In addition to the regular content types, you can
+use two special values called <code>figure</code> and <code>table</code> to add labels for book
+images and tables. If you don't want to show labels in your book, set an
+empty value for this option: <code>labels: ~</code>.</li>
+<li><code>toc</code>, sets the options of the table of contents. It's ignored unless the
+book has at least one <code>toc</code> element type. It has two options:
+
+<ul>
+<li><code>deep</code>, the maximum heading level included in the TOC (<code>1</code> is the lowest
+possible number and would only show <code>&lt;h1&gt;</code> level headings; <code>6</code> is the
+highest possible value and would show all <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code>, <code>&lt;h4&gt;</code>,
+<code>&lt;h5&gt;</code> and <code>&lt;h6&gt;</code> headings).</li>
+<li><code>elements</code>, the type of elements included in the TOC (by default, only
+<code>appendix</code>, <code>chapter</code> and <code>part</code> are included).</li>
+</ul></li>
+</ul>
+
+<h3 id="format-specific-configuration-options">3.2.2 Format specific configuration options</h3>
+
+<p>In addition to the common configuration options, some formats define their own
+specific configuration options:</p>
+
+<ul>
+<li><a class="internal" href="./chapter-5.html#html-configuration-options">Configuration options for the <code>html_chunked</code> format</a></li>
+<li><a class="internal" href="./chapter-8.html#pdf-configuration-options">Configuration options for the <code>pdf</code> format</a></li>
+</ul>
+
+<h2 id="before-and-after-scripts">3.3 Before and after scripts</h2>
+
+<p>Publishing a digital book usually involves more than the actual publication
+of the book. Sometimes, before publishing the book, its contents must be
+updated by downloading them from a remote server. After the publication, you
+may need to copy the book into another directory or you may have to notify 
+some other system about the publication.</p>
+
+<p><strong>easybook</strong> simplifies all these tasks with the <code>before_publish</code> and
+<code>after_publish</code> edition options. These options are modeled after the popular
+<a href="http://about.travis-ci.org/docs/user/build-configuration/#before_script%2C-after_script"><code>before_script</code> and <code>after_script</code> Travis CI options</a> and allow you to
+execute commands before or after the book publication without the need to
+define a custom plugin or a script.</p>
+
+<p>Each option admit an array of commands that are executed sequentially:</p>
+
+<p>~~~ .yaml
+book:
+    title: '...'
+    # ...</p>
+
+<pre><code>editions:
+    # ...
+
+    website:
+        format:      html_chunked
+        chunk_level: 2
+        # ...
+
+        before_publish:
+            - echo "This command is executed before book publishing"
+            - git pull ...
+            - cp ...
+
+        after_publish:
+            - "/home/user/scripts/notify_book_publish.sh"
+            - "/home/user/scripts/update_google_sitemap_xml.sh"
+</code></pre>
+
+<p>~~~</p>
+
+<p>If you only need to execute one command, you can replace the array for
+a simple string:</p>
+
+<p>~~~ .yaml
+book:
+    # ...</p>
+
+<pre><code>editions:
+
+    website:
+        # ...
+        before_publish: "cd ... &amp;&amp; git pull"
+        after_publish:  "/home/user/scripts/notify_book_publish.sh"
+</code></pre>
+
+<p>~~~</p>
+
+<p>As any other <strong>easybook</strong> command, all of these scripts are rendered as Twig
+strings, so they can easily access to any application property:</p>
+
+<p>~~~ .yaml
+book:
+    # ...</p>
+
+<pre><code>editions:
+
+    website:
+        # ...
+        before_publish: "git clone git://github.com/{{ app.get('publishing.book.slug') }}/book"
+        after_publish:  "cp ... /home/{{ book.author }}/books/{{ 'now'|date('YmdHis') }}_book.pdf"
+</code></pre>
+
+<p>~~~</p>
+
+<h2 id="extending-editions">3.4 Extending editions</h2>
+
+<p>In addition to the previous configuration options, editions can also set a 
+very useful option named <code>extends</code>. The value of this option is interpreted as
+the name of the edition from which this edition <em>inherits</em>. When an edition
+<em>inherits</em> from another edition, the options of the parent edition are copied 
+on the <em>heir</em> edition, which can then override any value.</p>
+
+<p>Imagine for example that you want to publish one PDF book with three slightly
+different designs. The draft version (<code>draft</code>) must be double-sided and must
+have very small margins to reduce its length, the normal version (<code>print</code>) is
+one-sided and has normal margins. The version prepared for lulu.com website
+(<code>lulu.com</code>) is similar to the normal version, except is double-sided:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    editions:
+        print:
+            format:       pdf
+            margin:
+                top:      25mm
+                bottom:   25mm
+                inner:    30mm
+                outter:   20mm
+            page_size:    A4
+            two_sided:    false</p>
+
+<pre><code>    draft:
+        extends:      print
+        margin:
+            top:      15mm
+            bottom:   15mm
+            inner:    20mm
+            outter:   10mm
+        two_sided:    true
+
+    lulu.com:
+        extends:      print
+        two_sided:    true
+</code></pre>
+
+<p>~~~</p>
+
+<p>First, define a new <code>pdf</code> format edition called <code>print</code> and set the page size, 
+the margins and disable the two-sided printing. Then, instead of creating a new
+edition for the <code>draft</code> book, you inherit from the previous edition
+(<code>extends: print</code>) and override its margins and the <code>two_sided</code> option.</p>
+
+<p>Similarly, as the <code>lulu.com</code> version is almost the same as the <code>print</code> edition,
+instead of creating a new edition, you just inherit from it (<code>extends: print</code>) 
+and then you override the only different configuration option.</p>
+
+<p>The only limitation of <code>extends</code> is that it only works with one level of 
+inheritance. Therefore, and edition cannot extend another edition that extends 
+a third one.</p>
+
+<p>If several editions share a large set of configuration options, you can 
+group them under a common <em>fake</em> edition and make the other <em>real</em> editions
+extend from it.</p>
+
+<p>If for example your <code>before_publish</code> and <code>after_publish</code> scripts are the
+same for every edition, group them in a <em>fake</em> edition:</p>
+
+<p>~~~ .yaml
+book:
+    # ...
+    editions:
+        common:
+            before_publish: ...
+            after_publish:  ...</p>
+
+<pre><code>     edition1:
+        extends: common
+        # ...
+
+     edition2:
+        extends: common
+        # ...
+
+     edition3:
+        extends: common
+        # ...
+</code></pre>
+
+<p>~~~</p>
+
+    </div>
+
+    <div class="span3">
+        <div class="item local_toc">
+            <h3>Índice de contenidos</h3>
+
+            <ul class="unstyled">
+                                                <li class="level-1">
+                        <span></span>
+                        <a class="internal" href="./chapter-3.html#editions">Editions</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>3.1</span>
+                        <a class="internal" href="./chapter-3.html#edition-formats">Edition formats</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>3.2</span>
+                        <a class="internal" href="./chapter-3.html#configuration-options">Configuration options</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>3.3</span>
+                        <a class="internal" href="./chapter-3.html#before-and-after-scripts">Before and after scripts</a>
+                    </li>
+                                    <li class="level-2">
+                        <span>3.4</span>
+                        <a class="internal" href="./chapter-3.html#extending-editions">Extending editions</a>
+                    </li>
+                                        </ul>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>
