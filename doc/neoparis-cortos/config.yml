@@ -9,6 +9,7 @@ book:
     edition:          First edition
     language:         es
     publication_date: ~
+    url_prefix:       neoparis-cortos
 
     generator: { name: easybook, version: 5.0 }
 
@@ -78,6 +79,7 @@ book:
             format:          html_chunked
             chunk_level:     1
             images_base_dir: /img/doc-en/
+            url_prefix: /neoparis-cortos/
 
         easybook-project.org:
             format:          html_chunked
